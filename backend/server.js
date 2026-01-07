@@ -287,8 +287,9 @@ function getActiveLobby(mode = DEFAULT_COOP_MODE) {
 function sanitizeLobbyPayload(body = {}) {
   const mode = normalizeCoopMode(body.mode);
   const lobbyName = String(body.lobbyName || body.name || 'Lobby Co-Op').slice(0, 48);
-  const defaultCapacity = mode === COOP_MODES.X1 ? 3 : 4;
-  const maxCap = mode === COOP_MODES.X1 ? 3 : COOP_MAX_HOSTED_PLAYERS;
+  // X1 é duelo 1v1, máximo 2 jogadores (1 host + 1 cliente)
+  const defaultCapacity = mode === COOP_MODES.X1 ? 2 : 4;
+  const maxCap = mode === COOP_MODES.X1 ? 2 : COOP_MAX_HOSTED_PLAYERS;
   const maxPlayers = Math.min(
     Math.max(parseInt(body.maxPlayers, 10) || defaultCapacity, 2),
     maxCap
