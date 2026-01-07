@@ -850,9 +850,9 @@ function updateSessionStats() {
     `;
 }
 
-// Atualizar stats a cada segundo
+// Atualizar stats a cada segundo (apenas se estiver no jogo)
 setInterval(() => {
-    if (gameStarted && pointerLocked) {
+    if (typeof gameStarted !== 'undefined' && gameStarted && typeof pointerLocked !== 'undefined' && pointerLocked) {
         updateSessionStats();
     }
 }, 1000);
@@ -861,38 +861,40 @@ setInterval(() => {
 // CALLBACK DE MORTE DE INIMIGO
 // ==========================================
 
-// Integrar com checkDeadEnemies
-const originalCheckDeadEnemies = checkDeadEnemies;
-checkDeadEnemies = function () {
-    const enemiesBeforeDeath = enemies.length;
-    originalCheckDeadEnemies();
-    const enemiesAfterDeath = enemies.length;
+// Integrar com checkDeadEnemies (apenas se existir - só existe em game.js)
+if (typeof checkDeadEnemies === 'function') {
+    const originalCheckDeadEnemies = checkDeadEnemies;
+    checkDeadEnemies = function () {
+        const enemiesBeforeDeath = typeof enemies !== 'undefined' ? enemies.length : 0;
+        originalCheckDeadEnemies();
+        const enemiesAfterDeath = typeof enemies !== 'undefined' ? enemies.length : 0;
 
-    // Se inimigos morreram, registrar kill
-    if (enemiesBeforeDeath > enemiesAfterDeath) {
-        const kills = enemiesBeforeDeath - enemiesAfterDeath;
-        for (let i = 0; i < kills; i++) {
-            // Verificar se foi headshot (simplificado)
-            trackWeaponKill(playerConfig.currentWeapon, false);
+        // Se inimigos morreram, registrar kill
+        if (enemiesBeforeDeath > enemiesAfterDeath) {
+            const kills = enemiesBeforeDeath - enemiesAfterDeath;
+            for (let i = 0; i < kills; i++) {
+                // Verificar se foi headshot (simplificado)
+                trackWeaponKill(playerConfig.currentWeapon, false);
+            }
         }
-    }
-};
+    };
+}
 
 // ==========================================
 // SALVAR DADOS PERIODICAMENTE
 // ==========================================
 
-// Auto-save a cada 2 minutos
+// Auto-save a cada 2 minutos (apenas se estiver no jogo)
 setInterval(async () => {
-    if (gameStarted && checkAuthentication()) {
+    if (typeof gameStarted !== 'undefined' && gameStarted && checkAuthentication()) {
         await saveWeaponStats();
         console.log('✅ Stats salvas automaticamente');
     }
 }, 120000);
 
-// Salvar ao fechar a página
+// Salvar ao fechar a página (apenas se estiver no jogo)
 window.addEventListener('beforeunload', async (e) => {
-    if (gameStarted && checkAuthentication()) {
+    if (typeof gameStarted !== 'undefined' && gameStarted && checkAuthentication()) {
         await saveHighScore(currentRound, calculateScore(), sessionStats.kills);
         await endGameSession(currentRound, calculateScore());
         await saveWeaponStats();
