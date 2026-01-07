@@ -1,0 +1,433 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Mapas Profissional - FPS 3D</title>
+    <link rel="stylesheet" href="css/editor.css">
+</head>
+
+<body>
+    <div id="toastMessage" class="toast-message" aria-live="polite"></div>
+    <div id="container">
+        <div id="sidebar">
+            <h2>🛠️ EDITOR PROFISSIONAL</h2>
+
+            <div class="mode-switch">
+                <button id="modeSurvival" class="active" onclick="setEditorMode('survival')">Horda / Survival</button>
+                <button id="modeTactical" onclick="setEditorMode('tactical')">Tático 5v5</button>
+                <button id="modeBattle" onclick="setEditorMode('battle')">Battle Royale</button>
+            </div>
+
+            <div class="tab-container">
+                <div class="tab active" onclick="switchEditorTab('objects')">📦 Objetos</div>
+                <div class="tab" onclick="switchEditorTab('enemies')">👾 Inimigos</div>
+                <div class="tab" onclick="switchEditorTab('config')">⚙️ Config</div>
+            </div>
+
+            <div id="tabObjects" class="editor-tab">
+                <div class="section">
+                    <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">🏗️ Objetos Pré-Prontos</h3>
+                    <div class="preset-objects">
+                        <button class="preset-btn" onclick="addPresetObject('house')">
+                            <span class="icon">🏠</span>
+                            <span>Casa</span>
+                        </button>
+                        <button class="preset-btn" onclick="addPresetObject('tower')">
+                            <span class="icon">🗼</span>
+                            <span>Torre</span>
+                        </button>
+                        <button class="preset-btn" onclick="addPresetObject('barricade')">
+                            <span class="icon">🚧</span>
+                            <span>Barricada</span>
+                        </button>
+                        <button class="preset-btn" onclick="addPresetObject('bunker')">
+                            <span class="icon">🏰</span>
+                            <span>Bunker</span>
+                        </button>
+                        <button class="preset-btn" onclick="addPresetObject('wall')">
+                            <span class="icon">🧱</span>
+                            <span>Muro</span>
+                        </button>
+                        <button class="preset-btn" onclick="addPresetObject('crate')">
+                            <span class="icon">📦</span>
+                            <span>Caixa</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">Objeto Customizado</h3>
+
+                    <div class="control-group">
+                        <label>Tipo de Objeto:</label>
+                        <select id="objectType">
+                            <option value="platform">Plataforma</option>
+                            <option value="wall">Parede</option>
+                            <option value="box">Caixa</option>
+                            <option value="ground">Chão</option>
+                        </select>
+                    </div>
+
+                <div class="control-group">
+                    <label>Largura (X):</label>
+                    <input type="number" id="width" value="10" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Altura (Y):</label>
+                    <input type="number" id="height" value="2" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Profundidade (Z):</label>
+                    <input type="number" id="depth" value="10" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Posição X:</label>
+                    <input type="number" id="posX" value="0" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Posição Y:</label>
+                    <input type="number" id="posY" value="1" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Posição Z:</label>
+                    <input type="number" id="posZ" value="0" step="0.5">
+                </div>
+
+                <div class="control-group">
+                    <label>Cor:</label>
+                    <div class="color-picker">
+                        <div class="color-option selected" style="background: #8b7355;" data-color="0x8b7355"></div>
+                        <div class="color-option" style="background: #666666;" data-color="0x666666"></div>
+                        <div class="color-option" style="background: #8b4513;" data-color="0x8b4513"></div>
+                        <div class="color-option" style="background: #2d5016;" data-color="0x2d5016"></div>
+                        <div class="color-option" style="background: #ff0000;" data-color="0xff0000"></div>
+                        <div class="color-option" style="background: #0000ff;" data-color="0x0000ff"></div>
+                    </div>
+                </div>
+
+                    <button id="addObject">➕ ADICIONAR OBJETO</button>
+                </div>
+
+                <div id="selectedObjectPanel" class="section">
+                    <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">Propriedades do Objeto</h3>
+                    <div class="control-group">
+                        <label>Textura:</label>
+                        <button id="addTextureBtn">🖼️ Adicionar Textura</button>
+                        <button id="removeTextureBtn" class="secondary" style="display: none;">❌ Remover Textura</button>
+                        <input type="file" id="textureInput" accept="image/*">
+                        <div id="texturePreview" style="width:100%; height: 100px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-top: 10px; border: 1px solid #555;"></div>
+                    </div>
+                    <div class="control-group">
+                        <label>Rotação Y (graus):</label>
+                        <input type="number" id="rotationY" value="0" step="15" min="0" max="360" onchange="rotateSelectedObject()">
+                    </div>
+                    <div class="control-group">
+                        <label>Posição no Mapa:</label>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="number" id="selectedPosX" placeholder="X" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                            <input type="number" id="selectedPosY" placeholder="Y" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                            <input type="number" id="selectedPosZ" placeholder="Z" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">Objetos no Mapa</h3>
+                    <div id="objectsList"></div>
+                    <button id="clearAll" class="danger">🗑️ LIMPAR TUDO</button>
+                </div>
+            </div>
+
+            <div id="tabEnemies" class="editor-tab" style="display: none;">
+                <div id="survivalEnemyTools" class="section enemy-spawn-mode">
+                    <h3 style="color: #ff0000; font-size: 16px; margin-bottom: 10px;">👾 Spawns de Inimigos</h3>
+                    <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Clique no mapa para adicionar pontos de spawn</p>
+                    
+                    <div class="control-group">
+                        <label>Tipo de Inimigo:</label>
+                        <select id="enemyType">
+                            <option value="melee">Corpo a Corpo (Cinza)</option>
+                            <option value="ranged">À Distância (Laranja)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Round de Spawn:</label>
+                        <input type="number" id="spawnRound" value="1" min="1" max="100">
+                    </div>
+
+                    <button onclick="addEnemySpawn()">➕ ADICIONAR SPAWN (Clique no Mapa)</button>
+                    
+                    <div id="enemySpawnsList" style="max-height: 300px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
+
+                    <button onclick="clearEnemySpawns()" class="danger" style="margin-top: 10px;">🗑️ LIMPAR SPAWNS</button>
+                </div>
+
+                <div id="tacticalTools" style="display:none;">
+                    <div class="section">
+                        <h3 style="color:#00c6ff;font-size:16px;margin-bottom:10px;">🎯 Objetivos (Bombsites)</h3>
+                        <p style="font-size:13px;color:#aaa;margin-bottom:12px;">Selecione um objetivo e clique no mapa para posicionar. Use novamente para reposicionar.</p>
+                        <div class="objective-status">
+                            <div>
+                                <strong>Site A</strong>
+                                <span id="objectiveAInfo">Não definido</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button onclick="startObjectivePlacement('A')">Definir</button>
+                                <button class="secondary" onclick="removeObjectiveMarker('A')">Limpar</button>
+                            </div>
+                        </div>
+                        <div class="objective-status">
+                            <div>
+                                <strong>Site B</strong>
+                                <span id="objectiveBInfo">Não definido</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button onclick="startObjectivePlacement('B')">Definir</button>
+                                <button class="secondary" onclick="removeObjectiveMarker('B')">Limpar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 style="color:#00ff9d;font-size:16px;margin-bottom:10px;">👥 Spawns das Equipes</h3>
+                        <p style="font-size:13px;color:#aaa;">Clique em "Adicionar" e depois no mapa para criar pontos.</p>
+                        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+                            <button onclick="startTeamSpawnPlacement('allies')">➕ Spawn Aliado</button>
+                            <button class="secondary" onclick="startTeamSpawnPlacement('enemies')">➕ Spawn Inimigo</button>
+                            <button class="danger" onclick="clearTeamSpawns('allies')">Limpar Aliados</button>
+                            <button class="danger" onclick="clearTeamSpawns('enemies')">Limpar Inimigos</button>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+                            <div>
+                                <h4 style="margin-bottom:8px;color:#7dffcf;">Vanguarda (Aliados)</h4>
+                                <div id="allySpawnList" style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;"></div>
+                            </div>
+                            <div>
+                                <h4 style="margin-bottom:8px;color:#ff8a8a;">Legion (Inimigos)</h4>
+                                <div id="enemyTeamSpawnList" style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;"></div>
+                            </div>
+                        </div>
+
+                        <div id="battleTools" style="display:none;">
+                            <div class="section enemy-spawn-mode">
+                                <h3 style="color:#7dffcf;font-size:16px;margin-bottom:10px;">💼 Zonas de Loot</h3>
+                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Defina regiões com loot garantido. Escolha o raio e clique no mapa.</p>
+                                <div class="control-group">
+                                    <label>Raio da Zona (m):</label>
+                                    <input type="number" id="lootZoneRadius" value="12" min="4" max="60" step="1">
+                                </div>
+                                <button onclick="startBattlePlacement('loot')">➕ ADICIONAR ZONA (CLIQUE NO MAPA)</button>
+                                <div id="battleLootList" style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
+                                <button class="danger" style="margin-top:10px;" onclick="clearBattleLootZones()">🗑️ LIMPAR ZONAS</button>
+                            </div>
+
+                            <div class="section enemy-spawn-mode">
+                                <h3 style="color:#ffd54f;font-size:16px;margin-bottom:10px;">📦 Drops Aéreos / Respawns</h3>
+                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Marque pontos para pacotes de suprimento ou respawns especiais.</p>
+                                <div class="control-group">
+                                    <label>Altura do Drop (m):</label>
+                                    <input type="number" id="dropAltitude" value="60" min="15" max="150" step="5">
+                                </div>
+                                <button onclick="startBattlePlacement('drop')">➕ ADICIONAR DROP (CLIQUE NO MAPA)</button>
+                                <div id="battleDropList" style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
+                                <button class="danger" style="margin-top:10px;" onclick="clearBattleDropSpawns()">🗑️ LIMPAR DROPS</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabConfig" class="editor-tab" style="display: none;">
+                <div id="roundConfig" class="section">
+                    <h3 style="color: #ffff00; font-size: 16px; margin-bottom: 10px;">🎯 Configuração de Rounds</h3>
+                    
+                    <div class="control-group">
+                        <label>Quantidade Total de Rounds:</label>
+                        <input type="number" id="totalRounds" value="10" min="1" max="100">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Inimigos por Round (Base):</label>
+                        <input type="number" id="enemiesPerRound" value="5" min="1" max="50">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Incremento por Round:</label>
+                        <input type="number" id="enemyIncrement" value="2" min="0" max="10">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Dificuldade:</label>
+                        <select id="difficulty">
+                            <option value="easy">Fácil</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="hard">Difícil</option>
+                            <option value="extreme">Extremo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">🎵 Trilha Sonora</h3>
+                    
+                    <div class="control-group">
+                        <label>Música de Fundo:</label>
+                        <button onclick="document.getElementById('musicFileInput').click()">🎵 Carregar Música</button>
+                        <input type="file" id="musicFileInput" accept="audio/*">
+                        <div id="musicInfo" style="margin-top: 10px; font-size: 12px; color: #aaa;"></div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Volume: <span id="volumeValue">50%</span></label>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="updateVolume(this.value)">
+                    </div>
+
+                    <button id="toggleMusic" onclick="toggleMusic()">▶️ REPRODUZIR</button>
+                </div>
+
+                <div id="tacticalRoundConfig" class="section">
+                    <h3 style="color:#00c6ff;font-size:16px;margin-bottom:10px;">🛡️ Configuração Tática 5v5</h3>
+                    <div class="control-group">
+                        <label>Rounds para Vencer:</label>
+                        <input type="number" id="tacticalRoundsToWin" value="9" min="1" max="24">
+                    </div>
+                    <div class="control-group">
+                        <label>Tempo de Round (segundos):</label>
+                        <input type="number" id="tacticalRoundTime" value="110" min="30" max="300">
+                    </div>
+                    <div class="control-group">
+                        <label>Duração da Fase de Compra (segundos):</label>
+                        <input type="number" id="tacticalBuyTime" value="12" min="5" max="60">
+                    </div>
+                    <div class="control-group">
+                        <label>Rounds de Overtime:</label>
+                        <input type="number" id="tacticalOTRounds" value="3" min="1" max="12">
+                    </div>
+                </div>
+
+                <div id="battleConfigSection" class="section" style="display:none;">
+                    <h3 style="color:#ff9e4f;font-size:16px;margin-bottom:12px;">🔥 Configuração Battle Royale</h3>
+
+                    <div class="control-group">
+                        <label>Jogadores Máximos:</label>
+                        <input type="number" id="battleMaxPlayers" value="12" min="8" max="40">
+                    </div>
+                    <div class="control-group">
+                        <label>Quantidade de Bots:</label>
+                        <input type="number" id="battleAiOpponents" value="9" min="0" max="30">
+                    </div>
+
+                    <h4 style="margin:15px 0 8px;color:#7dffcf;">🛩️ Linha do Avião</h4>
+                    <div class="control-group">
+                        <label>Ponto Inicial (X / Y / Z):</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <input type="number" id="planeStartX" value="-180" step="1" style="flex:1;min-width:80px;">
+                            <input type="number" id="planeStartY" value="90" step="1" style="flex:1;min-width:80px;">
+                            <input type="number" id="planeStartZ" value="140" step="1" style="flex:1;min-width:80px;">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Ponto Final (X / Y / Z):</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <input type="number" id="planeEndX" value="180" step="1" style="flex:1;min-width:80px;">
+                            <input type="number" id="planeEndY" value="65" step="1" style="flex:1;min-width:80px;">
+                            <input type="number" id="planeEndZ" value="-140" step="1" style="flex:1;min-width:80px;">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label>Velocidade do Avião (m/s):</label>
+                        <input type="number" id="planeSpeed" value="45" min="10" max="120" step="1">
+                    </div>
+
+                    <h4 style="margin:15px 0 8px;color:#ffa8ff;">⚡ Zona Segura</h4>
+                    <div class="control-group">
+                        <label>Raio Inicial (m):</label>
+                        <input type="number" id="stormInitialRadius" value="120" min="40" max="300">
+                    </div>
+                    <div class="control-group">
+                        <label>Redução por estágio (%):</label>
+                        <input type="number" id="stormShrinkRatio" value="75" min="40" max="95">
+                    </div>
+                    <div class="control-group">
+                        <label>Intervalo entre fechamentos (s):</label>
+                        <input type="number" id="stormInterval" value="90" min="30" max="240">
+                    </div>
+                    <div class="control-group">
+                        <label>Atraso para primeira zona (s):</label>
+                        <input type="number" id="stormDelay" value="45" min="10" max="180">
+                    </div>
+                    <div class="control-group">
+                        <label>Dano fora da zona (HP/s):</label>
+                        <input type="number" id="stormDamage" value="5" min="1" max="20">
+                    </div>
+
+                    <h4 style="margin:15px 0 8px;color:#00ffb0;">📦 Loot & Suprimentos</h4>
+                    <div class="control-group">
+                        <label>Densidade de Armas (%):</label>
+                        <input type="number" id="lootWeaponDensity" value="100" min="25" max="200">
+                    </div>
+                    <div class="control-group">
+                        <label>Densidade de Cura (%):</label>
+                        <input type="number" id="lootHealDensity" value="100" min="25" max="200">
+                    </div>
+                    <div class="control-group">
+                        <label>Densidade de Munição (%):</label>
+                        <input type="number" id="lootAmmoDensity" value="120" min="25" max="250">
+                    </div>
+                    <div class="control-group">
+                        <label>Drops Especiais por Partida:</label>
+                        <input type="number" id="lootSupplyDrops" value="2" min="0" max="10">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">Configurações do Mapa</h3>
+
+                <div class="control-group">
+                    <label>Nome do Mapa:</label>
+                    <input type="text" id="mapName" value="Meu Mapa" placeholder="Nome do mapa">
+                </div>
+
+                <div class="control-group">
+                    <label>Cor do Céu:</label>
+                    <input type="text" id="skyColor" value="0x87ceeb" placeholder="0x87ceeb">
+                </div>
+
+                <button id="exportMap">💾 EXPORTAR MAPA COMPLETO</button>
+                <button id="importMap" class="secondary">📂 IMPORTAR MAPA</button>
+                <button id="saveToLauncher" class="secondary" style="margin-top:10px;">📁 SALVAR PARA 5V5</button>
+                <input type="file" id="fileInput" accept=".json">
+            </div>
+        </div>
+
+        <div id="viewport">
+            <div id="viewportStage" class="viewport-stage"></div>
+            <div id="controls">
+                <h3 style="color: #00ff00; margin-bottom: 8px;">⌨️ Controles</h3>
+                <p>🖱️ Mouse: Rotacionar câmera</p>
+                <p>🔍 Scroll: Zoom</p>
+                <p>👆 Click: Selecionar objeto</p>
+                <p>⌨️ WASD: Mover objeto</p>
+                <p>↕️ Q/E: Subir/Descer</p>
+                <p>🔄 R: Rotacionar 45°</p>
+                <p>🗑️ Delete: Remover</p>
+            </div>
+            
+            <audio id="backgroundMusic" loop></audio>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+
+</html>

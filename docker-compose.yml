@@ -1,0 +1,73 @@
+services:
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: fps_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: fps_admin
+      POSTGRES_PASSWORD: fps_secure_2024
+      POSTGRES_DB: fps_game
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - fps_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fps_admin -d fps_game"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Servidor Backend Node.js
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fps_backend
+    restart: always
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: fps_game
+      DB_USER: fps_admin
+      DB_PASSWORD: fps_secure_2024
+      JWT_SECRET: fps_jwt_super_secret_key_2024_change_in_production
+      SESSION_SECRET: fps_session_secret_key_2024
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fps_network
+
+  # Servidor Frontend Nginx
+  frontend:
+    image: nginx:alpine
+    container_name: fps_frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - fps_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  fps_network:
+    driver: bridge

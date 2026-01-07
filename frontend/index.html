@@ -1,0 +1,879 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS 3D - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+    <div class="app-bg"></div>
+
+    <header class="top-bar">
+        <div class="brand">NEON OPS<span>FPS 3D</span></div>
+        <nav>
+            <a href="#" onclick="switchTab('modeSelect'); return false;">Modos</a>
+            <a href="#" onclick="switchTab('stats'); return false;">Estatísticas</a>
+            <a href="editor.html">Editor</a>
+            <a href="#" onclick="switchTab('leaderboard'); return false;">Ranking</a>
+            <a href="#" onclick="switchTab('maps'); return false;">Mapas</a>
+        </nav>
+        <div class="top-bar-actions" id="topBarActions">
+            <button class="ghost" onclick="switchTab('login')">Entrar</button>
+            <button class="primary" onclick="switchTab('register')">Criar Conta</button>
+        </div>
+    </header>
+
+    <section class="hero-grid">
+        <div class="hero-copy">
+            <p class="hero-eyebrow" id="sessionEyebrow">FPS 3D • NEXT GEN</p>
+            <h1 id="sessionHeadline">Domine o campo de batalha com precisão cinematográfica.</h1>
+            <p class="hero-lede" id="sessionSubhead">
+                Sobreviva às hordas infinitas, dispute um Battle Royale tático e projete mapas profissionais em poucos
+                minutos.
+                Tudo em um único launcher web-ready.
+            </p>
+            <div class="hero-cta">
+                <button class="primary" id="heroPrimaryBtn">Criar Conta</button>
+                <button class="ghost" id="heroSecondaryBtn">Explorar Modos</button>
+            </div>
+            <div class="badge-row">
+                <span id="sessionBadge">Sem conta? Jogue como convidado.</span>
+                <span>Editor Profissional</span>
+                <span>Battle Royale + Sobrevivência</span>
+            </div>
+        </div>
+        <div class="hero-panel">
+            <h3>STATUS AO VIVO</h3>
+            <div class="hero-stats">
+                <div class="hero-stat-card">
+                    <span>JOGADORES ONLINE</span>
+                    <strong id="heroPlayersOnline">0</strong>
+                </div>
+                <div class="hero-stat-card">
+                    <span>MAPAS CRIADOS</span>
+                    <strong id="heroMaps">0</strong>
+                </div>
+                <div class="hero-stat-card">
+                    <span>MODO FAVORITO</span>
+                    <strong id="heroFavorite">-</strong>
+                </div>
+                <div class="hero-stat-card">
+                    <span>PARTIDAS HOJE</span>
+                    <strong id="heroMatches">0</strong>
+                </div>
+            </div>
+            <ul class="hero-list">
+                <li>Progressão persistente vinculada à sua conta.</li>
+                <li>Partidas como convidado com salvamento local.</li>
+                <li>Leaderboard global sincronizado com o backend Node.</li>
+                <li>Infra pronta para Docker + deploy em nuvem.</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="container">
+        <h1>🎮 FPS 3D</h1>
+        <p class="subtitle">Sistema de Níveis e Recordes</p>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">LOGIN</div>
+            <div class="tab" onclick="switchTab('register')">REGISTRAR</div>
+            <div class="tab hidden" id="tabModeSelect" onclick="switchTab('modeSelect')">JOGAR</div>
+            <div class="tab hidden" id="tabStats" onclick="switchTab('stats')">ESTATÍSTICAS</div>
+            <div class="tab hidden" id="tabLeaderboard" onclick="switchTab('leaderboard')">RANKING</div>
+            <div class="tab hidden" id="tabMaps" onclick="switchTab('maps')">MAPAS</div>
+        </div>
+
+        <div class="message" id="message"></div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processando...</p>
+        </div>
+
+        <!-- Login -->
+        <div id="loginForm" class="form-section panel active">
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <div class="input-shell">
+                        <input type="text" id="loginUsername" required placeholder="Digite seu usuário">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <div class="input-shell">
+                        <input type="password" id="loginPassword" required placeholder="Digite sua senha">
+                    </div>
+                </div>
+                <button type="submit">ENTRAR</button>
+            </form>
+        </div>
+
+        <!-- Registro -->
+        <div id="registerForm" class="form-section panel">
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Usuário</label>
+                    <div class="input-shell">
+                        <input type="text" id="regUsername" required minlength="3" placeholder="Mínimo 3 caracteres">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <div class="input-shell">
+                        <input type="email" id="regEmail" required placeholder="seu@email.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Nome de Exibição</label>
+                    <div class="input-shell">
+                        <input type="text" id="regDisplayName" placeholder="Como você quer ser chamado">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <div class="input-shell">
+                        <input type="password" id="regPassword" required minlength="6"
+                            placeholder="Mínimo 6 caracteres">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Senha</label>
+                    <div class="input-shell">
+                        <input type="password" id="regConfirmPassword" required placeholder="Digite a senha novamente">
+                    </div>
+                </div>
+                <button type="submit">CRIAR CONTA</button>
+            </form>
+        </div>
+
+        <!-- Seleção de Modo -->
+        <div id="modeSelectSection" class="form-section panel">
+            <h2 style="text-align:center;color:#00ff00;margin-bottom:30px;">Escolha o Modo de Jogo</h2>
+
+            <div class="mode-selection">
+                <!-- Modo Sobrevivência -->
+                <div class="mode-card survival" onclick="selectGameMode('survival', null, { variant: 'solo' })">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">SOBREVIVÊNCIA</div>
+                    <div class="mode-description">
+                        Enfrente ondas infinitas de inimigos! Sobreviva o máximo de rounds possível, desbloqueie armas e
+                        melhore suas habilidades.
+                    </div>
+                    <ul class="mode-features">
+                        <li>Sistema de Rounds Progressivos</li>
+                        <li>6 Armas Desbloqueáveis</li>
+                        <li>12 Upgrades Normais + 7 Super</li>
+                        <li>Desbloqueio a cada 5 rounds</li>
+                        <li>Inimigos cada vez mais fortes</li>
+                    </ul>
+                    <div class="mode-stats" id="survivalModeStats">
+                        <div class="mode-stats-row">
+                            <span>Melhor Round:</span>
+                            <span class="mode-stats-value" id="survivalBestRound">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Maior Pontuação:</span>
+                            <span class="mode-stats-value" id="survivalBestScore">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Total de Kills:</span>
+                            <span class="mode-stats-value" id="survivalTotalKills">-</span>
+                        </div>
+                    </div>
+                    <button class="mode-play-btn">▶ JOGAR AGORA</button>
+                </div>
+
+                <!-- Survival Co-Op -->
+                <div class="mode-card coop" id="coopModeCard">
+                    <div class="mode-icon">🤝</div>
+                    <div class="mode-title">SOBREVIVÊNCIA CO-OP</div>
+                    <div class="mode-description">
+                        Forme um esquadrão de até 4 jogadores via LAN/VPN. Sincronize ondas, itens e progresso em tempo
+                        real com o novo servidor co-op.
+                    </div>
+                    <ul class="mode-features">
+                        <li>Servidor autoritativo WebSocket</li>
+                        <li>Descoberta via UDP (Radmin VPN)</li>
+                        <li>Lobby com ready-check e chat</li>
+                        <li>Rollback simplificado para IA</li>
+                        <li>Suporte a host local + clientes</li>
+                    </ul>
+                    <div class="mode-stats" id="coopModeStats">
+                        <div class="mode-stats-row">
+                            <span>Status do servidor:</span>
+                            <span class="mode-stats-value" id="coopServerStatus">Offline</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Jogadores online:</span>
+                            <span class="mode-stats-value" id="coopOnlineCount">0</span>
+                        </div>
+                    </div>
+                    <div class="mode-actions">
+                        <button class="primary" onclick="openCoopHostModal(event)">⚡ HOSPEDAR LOBBY</button>
+                        <button onclick="openCoopJoinModal(event)">🌐 ENTRAR EM LOBBY</button>
+                    </div>
+                    <div class="coop-host-hint">
+                        <span id="coopHostHint">Nenhum lobby local ativo.</span>
+                        <button id="coopShutdownBtn" class="danger" onclick="handleCoopShutdown(event)" disabled>🛑
+                            ENCERRAR LOBBY</button>
+                    </div>
+                    <div id="coopGlobalStatus" class="coop-status-badge" style="display:none;"></div>
+                    <div class="coop-presence-indicator" id="coopPresenceIndicator" data-state="offline">
+                        <div>⏱️ Atualizando presença...</div>
+                        <span id="coopPresenceTimestamp">--</span>
+                    </div>
+                </div>
+
+                <!-- X1 Duel Co-Op -->
+                <div class="mode-card coop" id="x1ModeCard">
+                    <div class="mode-icon">⚔️</div>
+                    <div class="mode-title">DUELO X1 LAN</div>
+                    <div class="mode-description">
+                        Desafie um amigo em partidas 1v1 usando o mesmo movimento, armas e progressão do Survival. Host
+                        e cliente sincronizam posições via WebSocket.
+                    </div>
+                    <ul class="mode-features">
+                        <li>Até 3 jogadores (host + clientes)</li>
+                        <li>Sincronização de armas e upgrades</li>
+                        <li>WebSocket autoritativo igual ao co-op</li>
+                        <li>Ideal para treinar mira e movimentação</li>
+                        <li>Compatível com LAN, VPN ou IP direto</li>
+                    </ul>
+                    <div class="mode-stats" id="x1ModeStats">
+                        <div class="mode-stats-row">
+                            <span>Status do servidor:</span>
+                            <span class="mode-stats-value" id="x1ServerStatus">Offline</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Duelo ativo:</span>
+                            <span class="mode-stats-value" id="x1OnlineCount">0</span>
+                        </div>
+                    </div>
+                    <div class="mode-actions">
+                        <button class="primary" onclick="openCoopHostModal(event, 'x1')">⚔️ CRIAR LOBBY X1</button>
+                        <button onclick="openCoopJoinModal(event, 'x1')">🎮 ENTRAR NO X1</button>
+                    </div>
+                    <div class="coop-presence-indicator" id="x1PresenceIndicator" data-state="offline">
+                        <div>⏱️ Aguardando ping...</div>
+                        <span id="x1PresenceTimestamp">--</span>
+                    </div>
+                </div>
+
+                <!-- Modo Battle Royale -->
+                <div class="mode-card battleroyale" onclick="selectGameMode('battleroyale')">
+                    <div class="mode-icon">👑</div>
+                    <div class="mode-title">BATTLE ROYALE</div>
+                    <div class="mode-description">
+                        Enfrente 9 oponentes em um mapa gigante! Colete armas espalhadas, elimine inimigos e seja o
+                        último sobrevivente.
+                    </div>
+                    <ul class="mode-features">
+                        <li>10 Jogadores (1 Humano + 9 IA)</li>
+                        <li>Mapa 200x200 com 8 Casas</li>
+                        <li>15 Armas no Chão</li>
+                        <li>IA Inteligente e Agressiva</li>
+                        <li>Sistema de Ranking em Tempo Real</li>
+                    </ul>
+                    <div class="mode-stats" id="battleRoyaleModeStats">
+                        <div class="mode-stats-row">
+                            <span>Vitórias:</span>
+                            <span class="mode-stats-value" id="brWins">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Melhor Posição:</span>
+                            <span class="mode-stats-value" id="brBestPosition">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Total de Kills:</span>
+                            <span class="mode-stats-value" id="brTotalKills">-</span>
+                        </div>
+                    </div>
+                    <button class="mode-play-btn">▶ JOGAR AGORA</button>
+                </div>
+
+                <!-- Modo Tático 5v5 -->
+                <div class="mode-card tactical" onclick="selectGameMode('tactical')">
+                    <div class="mode-icon">🛡️</div>
+                    <div class="mode-title">TÁTICO 5v5</div>
+                    <div class="mode-description">
+                        Inspirado em CS:GO, Valorant e Krunker: dois times disputam rodadas rápidas com economia, recuo
+                        realista e IA agressiva do Battle Royale.
+                    </div>
+                    <ul class="mode-features">
+                        <li>5x5 com bots inteligentes</li>
+                        <li>Compra tática e troca de lado</li>
+                        <li>Partidas melhor de 9/OT</li>
+                        <li>Perfis com recuo e armas do Survival</li>
+                        <li>Referências CS/Valorant/R6</li>
+                    </ul>
+                    <div class="mode-stats" id="tacticalModeStats">
+                        <div class="mode-stats-row">
+                            <span>Vitórias:</span>
+                            <span class="mode-stats-value" id="tacticalWins">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Partidas:</span>
+                            <span class="mode-stats-value" id="tacticalMatches">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Winrate:</span>
+                            <span class="mode-stats-value" id="tacticalWinRate">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Kills:</span>
+                            <span class="mode-stats-value" id="tacticalKills">-</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Melhor Rank:</span>
+                            <span class="mode-stats-value" id="tacticalBestRank">-</span>
+                        </div>
+                    </div>
+                    <button class="mode-play-btn">▶ JOGAR AGORA</button>
+                </div>
+
+                <!-- Clash Royale Clone (Offline) -->
+                <div class="mode-card clash" onclick="window.location.href='clash/index.html'">
+                    <div class="mode-icon">⚔️</div>
+                    <div class="mode-title">CLASH ROYALE CLONE</div>
+                    <div class="mode-description">
+                        Jogo de estratégia em tempo real estilo Clash Royale! Colecione cartas, monte seu deck e destrua
+                        as torres inimigas.
+                    </div>
+                    <ul class="mode-features">
+                        <li>Sistema de Cartas Colecionáveis</li>
+                        <li>Batalhas em Tempo Real</li>
+                        <li>Sistema de Baús e Recompensas</li>
+                        <li>Progressão de Arenas</li>
+                        <li>Jogue 100% Offline</li>
+                    </ul>
+                    <div class="mode-stats" id="clashModeStats">
+                        <div class="mode-stats-row">
+                            <span>Status:</span>
+                            <span class="mode-stats-value">🎮 Offline</span>
+                        </div>
+                        <div class="mode-stats-row">
+                            <span>Tipo:</span>
+                            <span class="mode-stats-value">Estratégia</span>
+                        </div>
+                    </div>
+                    <button class="mode-play-btn">▶ JOGAR AGORA</button>
+                </div>
+            </div>
+
+            <div class="action-buttons" style="margin-top:30px;">
+                <button class="secondary" onclick="window.location.href='editor.html'">🛠️ EDITOR DE MAPAS</button>
+                <button class="secondary" onclick="logout()">🚪 SAIR</button>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div id="statsSection" class="form-section panel">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <div class="profile-info">
+                    <h2 id="profileName">Carregando...</h2>
+                    <p id="profileDetails">Nível 1 • 0 XP</p>
+                </div>
+            </div>
+
+            <div class="stats-mode-selector">
+                <button class="active" data-mode="survival" onclick="switchStatsMode('survival', this)">🎯
+                    SOBREVIVÊNCIA</button>
+                <button class="battleroyale-mode" data-mode="battleroyale"
+                    onclick="switchStatsMode('battleroyale', this)">👑 BATTLE ROYALE</button>
+                <button data-mode="tactical" onclick="switchStatsMode('tactical', this)">🛡️ TÁTICO 5V5</button>
+            </div>
+
+            <div id="survivalStats">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Nível</div>
+                        <div class="stat-value" id="statLevel">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Experiência</div>
+                        <div class="stat-value" id="statXP">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Kills Totais</div>
+                        <div class="stat-value" id="statKills">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">K/D Ratio</div>
+                        <div class="stat-value" id="statKD">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Melhor Round</div>
+                        <div class="stat-value" id="statRound">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Melhor Score</div>
+                        <div class="stat-value" id="statScore">-</div>
+                    </div>
+                </div>
+
+                <h3 style="color:#00ff00;margin:20px 0 10px;">🔫 Estatísticas por Arma</h3>
+                <div class="weapon-stats" id="weaponStats"></div>
+            </div>
+
+            <div id="battleRoyaleStats" style="display:none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Vitórias</div>
+                        <div class="stat-value" id="statBRWins">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Partidas Jogadas</div>
+                        <div class="stat-value" id="statBRGames">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Taxa de Vitória</div>
+                        <div class="stat-value" id="statBRWinRate">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Melhor Posição</div>
+                        <div class="stat-value" id="statBRBestPos">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total de Kills</div>
+                        <div class="stat-value" id="statBRKills">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Média Kills/Partida</div>
+                        <div class="stat-value" id="statBRAvgKills">-</div>
+                    </div>
+                </div>
+
+                <h3 style="color:#ff6b00;margin:20px 0 10px;">👑 Histórico Battle Royale</h3>
+                <div class="weapon-stats" id="brWeaponStats"></div>
+            </div>
+
+            <div id="tacticalStats" style="display:none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Vitórias</div>
+                        <div class="stat-value" id="statTacticalWins">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Partidas</div>
+                        <div class="stat-value" id="statTacticalGames">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Taxa de Vitória</div>
+                        <div class="stat-value" id="statTacticalWinRate">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total de Kills</div>
+                        <div class="stat-value" id="statTacticalKills">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Melhor Rank</div>
+                        <div class="stat-value" id="statTacticalBestRank">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Média Kills/Partida</div>
+                        <div class="stat-value" id="statTacticalAvgKills">-</div>
+                    </div>
+                </div>
+
+                <h3 style="color:#00c6ff;margin:20px 0 10px;">🛡️ Histórico 5v5</h3>
+                <p style="color:var(--muted); font-size:13px;">Partidas ranqueadas do modo tático utilizam os mesmos
+                    desbloqueios e armas do Survival.</p>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="switchTab('modeSelect')">🎮 JOGAR</button>
+                <button class="secondary" onclick="window.location.href='editor.html'">🛠️ EDITOR</button>
+                <button class="secondary" onclick="logout()">🚪 SAIR</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboardSection" class="form-section panel">
+            <div class="player-rank-card" id="playerRankCard">
+                <div>
+                    <p style="font-size:11px;letter-spacing:0.2em;color:var(--muted);text-transform:uppercase;">Seu
+                        Ranking</p>
+                    <div class="player-rank-chip" id="playerRankTier">-</div>
+                    <small id="playerRankProgress" style="color:var(--muted);">Complete partidas ranqueadas para
+                        desbloquear seu tier.</small>
+                </div>
+                <div class="player-rank-meta">
+                    <div>
+                        <span>Pontuação Estimada</span>
+                        <strong id="playerRankScore">-</strong>
+                    </div>
+                    <div>
+                        <span>Próximo Tier</span>
+                        <strong id="playerRankNext">-</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-mode-selector" style="margin-bottom: 20px;">
+                <button class="active" data-mode="survival" onclick="switchLeaderboardMode('survival', this)">🎯
+                    SOBREVIVÊNCIA</button>
+                <button data-mode="battleroyale" class="battleroyale-mode"
+                    onclick="switchLeaderboardMode('battleroyale', this)">👑 BATTLE ROYALE</button>
+                <button data-mode="tactical" onclick="switchLeaderboardMode('tactical', this)">🛡️ TÁTICO 5V5</button>
+            </div>
+
+            <div class="leaderboard-meta">
+                <span class="leaderboard-pill" id="leaderboardModeLabel">🎯 Sobrevivência</span>
+                <span class="leaderboard-pill" id="leaderboardMetricLabel">MMR</span>
+            </div>
+
+            <div id="leaderboardTabs" class="leaderboard-tabs"></div>
+
+            <table class="leaderboard-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Jogador</th>
+                        <th>Ranking</th>
+                        <th id="leaderboardMetric">Pontuação</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:#aaa;">Carregando...</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="match-feed">
+                <div class="match-feed-header">
+                    <h3>🧠 Últimas partidas ranqueadas</h3>
+                    <button class="ghost" type="button" onclick="refreshMatchFeed()">Atualizar</button>
+                </div>
+                <div id="matchFeed" class="match-card-grid">
+                    <p style="grid-column: 1/-1; text-align:center; color: var(--muted);">Selecione um modo para
+                        visualizar o histórico.</p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="switchTab('modeSelect')">🎮 JOGAR AGORA</button>
+                <button class="secondary" onclick="switchTab('stats')">📊 MINHAS STATS</button>
+            </div>
+        </div>
+
+        <!-- Community Maps -->
+        <div id="mapsSection" class="form-section panel">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <h2>Mapas da Comunidade</h2>
+                    <p>Baixe e jogue mapas criados por outros jogadores</p>
+                </div>
+                <button class="primary" onclick="openUploadMapModal()">📥 Publicar Mapa</button>
+            </div>
+
+            <div id="mapsList" class="maps-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <!-- Maps will be loaded here -->
+                <p style="grid-column: 1/-1; text-align: center; color: #aaa;">Carregando mapas...</p>
+            </div>
+        </div>
+
+        <!-- Upload Map Modal -->
+        <div id="uploadMapModal" class="modal"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+            <div class="modal-content"
+                style="background:var(--surface); padding:30px; border-radius:20px; border:1px solid var(--border); width:500px; max-width:90%;">
+                <h2 style="margin-bottom:20px; color:var(--primary);">Publicar Mapa</h2>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; color:var(--muted); margin-bottom:8px;">Nome do Mapa</label>
+                    <input type="text" id="uploadMapName"
+                        style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; border-radius:8px;">
+                </div>
+
+                <div style="margin-bottom:15px;">
+                    <label style="display:block; color:var(--muted); margin-bottom:8px;">Descrição</label>
+                    <textarea id="uploadMapDesc" rows="3"
+                        style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; border-radius:8px;"></textarea>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <label style="display:block; color:var(--muted); margin-bottom:8px;">Arquivo do Mapa (.json)</label>
+                    <input type="file" id="uploadMapFile" accept=".json"
+                        style="width:100%; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; border-radius:8px;">
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button onclick="uploadMap()" class="primary" style="flex:1;">Publicar</button>
+                    <button onclick="closeUploadMapModal()" class="ghost" style="flex:1;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Queue Selection Modal -->
+        <div id="queueModeModal" class="modal" style="display:none;">
+            <div class="modal-content queue-modal-content">
+                <button type="button" class="queue-modal-close" onclick="closeQueueModal()">&times;</button>
+                <div class="queue-header">
+                    <div id="queueModalIcon" class="queue-header-icon">👑</div>
+                    <div>
+                        <h2 id="queueModalTitle" style="margin-bottom:4px;">Battle Royale</h2>
+                        <p id="queueModalDescription" style="color:var(--muted); font-size:13px;">Escolha como deseja
+                            jogar.</p>
+                    </div>
+                </div>
+                <div id="queueModalRank" class="queue-rank">Rank Atual: -</div>
+                <div class="queue-options">
+                    <button type="button" class="queue-option" onclick="confirmQueueSelection('casual')">
+                        <strong>Casual</strong>
+                        <span id="queueCasualCopy">Sem impacto no Elo, ideal para treinar e testar armas.</span>
+                    </button>
+                    <button type="button" class="queue-option ranked" onclick="confirmQueueSelection('ranked')">
+                        <strong>Ranqueado</strong>
+                        <span id="queueRankedCopy">Vale Elo e usa o ranking global (Prata, Ouro, Diamante...).</span>
+                    </button>
+                </div>
+                <div id="customMapSection" class="custom-map-section" style="display:none;">
+                    <header>
+                        <div>
+                            <strong style="letter-spacing:0.08em;">Custom 5v5</strong>
+                            <small style="display:block;color:var(--muted);font-size:12px;">Use seus mapas do editor no
+                                modo tático.</small>
+                        </div>
+                        <button type="button" class="ghost" style="width:auto;padding:6px 12px;"
+                            onclick="window.location.href='editor.html'">Abrir Editor</button>
+                    </header>
+                    <div id="customMapList" class="custom-map-list"></div>
+                    <p id="customMapEmpty" class="custom-map-empty">Nenhum mapa salvo ainda. Abra o editor e use "Salvar
+                        para 5v5".</p>
+                    <button type="button" id="playCustomMapBtn" class="primary" style="margin-top:12px;"
+                        onclick="launchCustomTacticalMatch()" disabled>Iniciar Custom</button>
+                </div>
+                <p class="queue-note" id="queueModalNote">Vitórias ranqueadas utilizam o sistema de tiers com Bronze,
+                    Prata, Ouro, Platina e Diamante.</p>
+                <button type="button" class="ghost" onclick="closeQueueModal()">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Co-Op Host Modal -->
+        <div id="coopHostModal" class="modal" style="display:none;">
+            <div class="modal-content coop-modal-content">
+                <div class="coop-modal-header">
+                    <div>
+                        <h2 id="coopHostModalTitle">Hospedar Lobby Co-Op</h2>
+                        <p class="coop-inline-hint" id="coopHostModalSubtitle">Seu PC atua como servidor autoritativo
+                            (até 4 jogadores)</p>
+                    </div>
+                    <button type="button" class="queue-modal-close"
+                        onclick="closeCoopModal('coopHostModal')">&times;</button>
+                </div>
+                <form id="coopHostForm" onsubmit="handleCoopHostSubmit(event)">
+                    <div class="coop-form-grid">
+                        <div class="form-field">
+                            <label for="coopHostName">Nome do Lobby</label>
+                            <input type="text" id="coopHostName" placeholder="Ex: Squad Alpha" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopHostPlayer">Seu codinome</label>
+                            <input type="text" id="coopHostPlayer" placeholder="Ex: Ranger" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopHostMode">Modo do Lobby</label>
+                            <select id="coopHostMode" onchange="setActiveCoopMode(this.value, 'host')">
+                                <option value="survival">Sobrevivência</option>
+                                <option value="x1">Duelo X1</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopHostPort">Porta</label>
+                            <input type="number" id="coopHostPort" value="7777" min="1024" max="65535" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopHostSlots">Máx. Jogadores</label>
+                            <select id="coopHostSlots">
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4" selected>4</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopHostInterface">Interface / IP (Radmin)</label>
+                            <input type="text" id="coopHostInterface" placeholder="Ex: 25.45.120.10">
+                        </div>
+                    </div>
+                    <div style="margin-top:15px; display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="coopHostAnnounce" checked>
+                        <label for="coopHostAnnounce" class="coop-inline-hint" style="cursor:pointer;">Anunciar lobby na
+                            descoberta LAN/VPN</label>
+                    </div>
+                    <div class="coop-modal-note">
+                        Garanta que a porta escolhida esteja liberada no firewall do Windows e no Radmin. O backend
+                        co-op fará broadcast UDP para descoberta.
+                    </div>
+                    <div style="display:flex; gap:12px; margin-top:20px;">
+                        <button type="submit" class="primary" style="flex:1;">🚀 Iniciar Lobby</button>
+                        <button type="button" class="ghost" style="flex:1;"
+                            onclick="closeCoopModal('coopHostModal')">Cancelar</button>
+                    </div>
+                    <div id="coopHostStatus" class="coop-status-badge" style="display:none;"></div>
+                    <button type="button" id="coopHostLaunchBtn" class="primary"
+                        style="display:none; width:100%; margin-top:12px;"
+                        onclick="launchCoopGame('host', 'coopHostStatus')">▶ Abrir Survival como Host</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Co-Op Join Modal -->
+        <div id="coopJoinModal" class="modal" style="display:none;">
+            <div class="modal-content coop-modal-content">
+                <div class="coop-modal-header">
+                    <div>
+                        <h2 id="coopJoinModalTitle">Entrar em Lobby Co-Op</h2>
+                        <p class="coop-inline-hint" id="coopJoinModalSubtitle">Suporta IP direto, hostname local ou
+                            descoberta automática</p>
+                    </div>
+                    <button type="button" class="queue-modal-close"
+                        onclick="closeCoopModal('coopJoinModal')">&times;</button>
+                </div>
+                <form id="coopJoinForm" onsubmit="handleCoopJoinSubmit(event)">
+                    <div class="coop-form-grid">
+                        <div class="form-field">
+                            <label for="coopJoinPlayer">Seu codinome</label>
+                            <input type="text" id="coopJoinPlayer" placeholder="Ex: Ghost" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopJoinMode">Modo do Lobby</label>
+                            <select id="coopJoinMode" onchange="setActiveCoopMode(this.value, 'join')">
+                                <option value="survival">Sobrevivência</option>
+                                <option value="x1">Duelo X1</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopJoinAddress">IP / Host</label>
+                            <input type="text" id="coopJoinAddress" placeholder="Ex: 25.45.120.10" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="coopJoinPort">Porta</label>
+                            <input type="number" id="coopJoinPort" value="7777" min="1024" max="65535" required>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:18px;">
+                        <button type="button" class="ghost" id="coopDiscoveryBtn" onclick="scanCoopLobbies()">🔍
+                            Procurar Lobbies LAN</button>
+                        <button type="button" class="secondary" onclick="pasteClipboardInto('coopJoinAddress')">📋 Colar
+                            IP</button>
+                    </div>
+                    <div class="coop-discovery-list" id="coopLobbyList">
+                        <small class="coop-inline-hint">Nenhum scan realizado ainda.</small>
+                    </div>
+                    <div class="coop-modal-note">
+                        Caso esteja usando Radmin VPN, garanta que todos estejam na mesma rede e que apenas o adaptador
+                        Radmin esteja selecionado como rota principal.
+                    </div>
+                    <div style="display:flex; gap:12px; margin-top:20px;">
+                        <button type="submit" class="primary" style="flex:1;">🎯 Entrar no Lobby</button>
+                        <button type="button" class="ghost" style="flex:1;"
+                            onclick="closeCoopModal('coopJoinModal')">Cancelar</button>
+                    </div>
+                    <div id="coopJoinStatus" class="coop-status-badge" style="display:none;"></div>
+                    <button type="button" id="coopJoinLaunchBtn" class="primary"
+                        style="display:none; width:100%; margin-top:12px;"
+                        onclick="launchCoopGame('client', 'coopJoinStatus')">▶ Abrir Survival como Cliente</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="links" id="guestLinks">
+            <a href="#" onclick="selectGameMode('survival', null, { variant: 'solo' }); return false;">Jogar
+                Sobrevivência sem conta</a> |
+            <a href="#" onclick="selectGameMode('battleroyale'); return false;">Jogar Battle Royale sem conta</a> |
+            <a href="editor.html">Editor de Mapas</a>
+        </div>
+
+        <div class="info-box">
+            <h3>🏆 Sistema de Progressão</h3>
+            <ul>
+                <li>Sistema de níveis baseado em experiência</li>
+                <li>Leaderboard global de recordes</li>
+                <li>Estatísticas detalhadas por arma</li>
+                <li>Conquistas desbloqueáveis</li>
+                <li>Histórico completo de partidas</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- User Menu Modal -->
+    <div id="userMenuModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center;">
+        <div class="modal-content"
+            style="background:var(--surface); padding:30px; border-radius:20px; border:1px solid var(--border); width:400px; max-width:90%;">
+            <h2 style="margin-bottom:20px; color:var(--primary);">Perfil do Jogador</h2>
+
+            <div style="margin-bottom:20px;">
+                <label style="display:block; color:var(--muted); margin-bottom:8px;">Nome de Exibição</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <input type="text" id="editDisplayName"
+                        style="flex:1; min-width:0; padding:10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:white; border-radius:8px;">
+                    <button type="button" onclick="saveDisplayName()" class="primary"
+                        style="padding:10px 20px; flex:0 0 auto;">Salvar</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:20px;">
+                <h3 style="color:white; margin-bottom:15px;">Armário (Customização)</h3>
+                <div style="display:flex; gap:20px; margin-bottom:15px;">
+                    <div style="flex:1;">
+                        <label style="display:block; color:var(--muted); margin-bottom:8px;">Cor do Corpo</label>
+                        <input type="color" id="editBodyColor"
+                            style="width:100%; height:40px; border:none; border-radius:8px; cursor:pointer;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="display:block; color:var(--muted); margin-bottom:8px;">Cor da Cabeça</label>
+                        <input type="color" id="editHeadColor"
+                            style="width:100%; height:40px; border:none; border-radius:8px; cursor:pointer;">
+                    </div>
+                </div>
+                <div id="skinPreview" style="width:100px; height:150px; margin:0 auto; position:relative;">
+                    <!-- Preview CSS representation -->
+                    <div id="previewHead"
+                        style="width:40px; height:40px; background:#ff0000; position:absolute; top:10px; left:30px; border-radius:4px;">
+                    </div>
+                    <div id="previewBody"
+                        style="width:60px; height:90px; background:#ff0000; position:absolute; top:55px; left:20px; border-radius:4px;">
+                    </div>
+                </div>
+                <div style="margin-top:15px;">
+                    <label style="display:block; color:var(--muted); margin-bottom:8px;">Textura Personalizada</label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button type="button" class="primary" style="flex:1; min-width:180px;"
+                            onclick="document.getElementById('skinTextureInput').click()">🖼️ Selecionar
+                            Textura</button>
+                        <button type="button" id="removeSkinTextureBtn" class="secondary"
+                            style="display:none; min-width:140px;">Remover Textura</button>
+                    </div>
+                    <input type="file" id="skinTextureInput" accept="image/*" style="display:none;">
+                    <div id="skinTexturePreview"
+                        style="margin-top:10px; min-height:80px; border:1px dashed var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--muted); background-size:cover; background-position:center;">
+                        Nenhuma textura selecionada
+                    </div>
+                </div>
+                <button onclick="saveSkin()" class="primary" style="width:100%; margin-top:15px;">Salvar Visual</button>
+            </div>
+
+            <button onclick="logout(); closeUserMenu()" class="secondary"
+                style="width:100%; margin-bottom:10px; background: rgba(255, 50, 50, 0.2); color: #ff5555; border: 1px solid #ff5555;">Sair
+                da Conta</button>
+            <button onclick="closeUserMenu()" class="ghost" style="width:100%;">Fechar</button>
+        </div>
+    </div>
+
+    <script src="api-integration.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,298 @@
+﻿* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background: #000;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        #healthBar {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 300px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #healthFill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #00ff00);
+            width: 100%;
+            transition: width 0.3s;
+        }
+
+        #ammo {
+            position: absolute;
+            bottom: 70px;
+            left: 30px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #weapon {
+            position: absolute;
+            bottom: 100px;
+            left: 30px;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #playersAlive {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            text-shadow: 2px 2px 4px #000;
+            color: #ff0000;
+        }
+
+        #kills {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+            color: #ffaa00;
+        }
+
+        #minimap {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+        }
+
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .crosshair-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .crosshair-h {
+            width: 20px;
+            height: 2px;
+            top: 9px;
+            left: 0;
+        }
+
+        .crosshair-v {
+            width: 2px;
+            height: 20px;
+            top: 0;
+            left: 9px;
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            text-shadow: 3px 3px 6px #000;
+            display: none;
+            text-align: center;
+        }
+
+        #healthText {
+            position: absolute;
+            bottom: 35px;
+            left: 340px;
+            font-size: 18px;
+            color: white;
+        }
+
+        #reloadBar {
+            position: absolute;
+            bottom: 130px;
+            left: 30px;
+            width: 200px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #reloadFill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00aa00);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: all;
+        }
+
+        #startScreen h1 {
+            font-size: 72px;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+        }
+
+        #startScreen h2 {
+            font-size: 32px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 40px;
+        }
+
+        #startScreen p {
+            font-size: 18px;
+            color: #fff;
+            margin: 10px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #startButton {
+            margin-top: 30px;
+            padding: 20px 60px;
+            font-size: 28px;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            border: 3px solid #ff0000;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            pointer-events: all;
+        }
+
+        #startButton:hover {
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            pointer-events: all;
+        }
+
+        #gameOverScreen h1 {
+            font-size: 64px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        #gameOverScreen .stats {
+            font-size: 24px;
+            margin: 10px;
+            color: #fff;
+        }
+
+        #restartButton {
+            margin-top: 30px;
+            padding: 15px 50px;
+            font-size: 24px;
+            background: #00ff00;
+            color: #000;
+            border: 3px solid #00ff00;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            pointer-events: all;
+        }
+
+        #restartButton:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+        }
+
+        #leaderboard {
+            position: absolute;
+            top: 110px;
+            right: 30px;
+            width: 250px;
+            max-height: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ffaa00;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        #leaderboard h3 {
+            color: #ffaa00;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .leaderboard-entry {
+            color: white;
+            font-size: 14px;
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .leaderboard-entry.player {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+        }
+
+        .leaderboard-entry.eliminated {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }

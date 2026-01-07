@@ -1,0 +1,50 @@
+/* Menu Principal */
+#mainMenu {
+    text-align: center;
+}
+
+#mainMenu h1 {
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.player-info {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.trophies, .arena-name {
+    color: #fff;
+    font-size: 1.2em;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    color: #ccc;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+}

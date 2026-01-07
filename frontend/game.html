@@ -1,0 +1,393 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS 3D - Sistema de Rounds</title>
+    <link rel="stylesheet" href="css/game.css">
+</head>
+
+<body>
+    <div id="startScreen">
+        <h1>FPS 3D</h1>
+        <div class="mode-variant-banner">
+            <div id="modeVariantBadge" class="mode-variant-badge">SOBREVIVÊNCIA</div>
+            <span id="modeVariantCopy" class="mode-variant-copy">Mapa padrão pronto para carregar</span>
+        </div>
+        <div id="mapSelector">
+            <h2>SELEÇÃO DE MAPA</h2>
+            <button id="defaultMapBtn">Mapa Padrão</button>
+            <button id="customMapBtn">Mapa Customizado</button>
+            <input type="file" id="mapFileInput" accept=".json">
+            <div id="selectedMapInfo" class="selected-map" style="display: none;"></div>
+        </div>
+        <p>WASD - Mover | Mouse - Olhar | Click - Atirar | 1-6 - Armas</p>
+        <p>R - Recarregar | Z - Upgrades | E - Pegar | Espaço - Pular | M - Menu</p>
+        <button id="startButton">COMEÇAR JOGO</button>
+        <button onclick="window.location.href='index.html'"
+            style="margin-top: 15px; padding: 15px 40px; font-size: 20px; background: transparent; color: #fff; border: 2px solid #fff; border-radius: 10px; cursor: pointer; font-weight: bold; transition: all 0.3s; pointer-events: all;">VOLTAR
+            AO MENU</button>
+    </div>
+
+    <div id="hud">
+        <div id="round">ROUND 1</div>
+        <div id="enemies">Inimigos: 0</div>
+        <div id="upgradePointsHUD">Pontos: 0</div>
+        <div id="weapon">Arma: Pistola</div>
+        <div id="ammo">Munição: 12/48</div>
+        <div id="healthBar">
+            <div id="healthFill"></div>
+        </div>
+        <div id="healthText"></div>
+        <div id="crosshair">
+            <div class="crosshair-line crosshair-h"></div>
+            <div class="crosshair-line crosshair-v"></div>
+        </div>
+        <div id="message"></div>
+        <div id="reloadBar">
+            <div id="reloadFill"></div>
+        </div>
+        <div id="weaponDisplay"></div>
+        <div id="coopSyncIndicator" class="coop-sync-indicator">SYNC</div>
+        <div id="x1KillLeaderboard" class="x1-kill-board hidden">
+            <div class="x1-kill-title">DUELO X1 - KILLS</div>
+            <div id="x1KillLeaderboardList" class="x1-kill-list">
+                <div class="x1-kill-empty">Aguardando duelo...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainMenu">
+        <div id="menuMain" class="menu-section active">
+            <h2>MENU</h2>
+            <button id="btnResume">RETOMAR (M)</button>
+            <button id="btnGraphics" class="secondary">GRÁFICOS</button>
+            <button id="btnCrosshair" class="secondary">CROSSHAIR</button>
+            <button id="btnSensitivity" class="secondary">SENSIBILIDADE</button>
+            <button id="btnChangeMap" class="secondary">TROCAR MAPA</button>
+            <button id="btnRestart" class="secondary">REINICIAR</button>
+            <button id="btnQuit" class="danger">SAIR DO JOGO</button>
+        </div>
+
+        <div id="menuGraphics" class="menu-section">
+            <button class="back-btn" onclick="switchMenuSection('main')">VOLTAR</button>
+            <h2>GRÁFICOS</h2>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" id="toggleShadows" checked>
+                    <span>Sombras Dinâmicas</span>
+                </label>
+            </div>
+            <p style="color: #aaa; font-size: 14px; margin-top: 15px;">Desativar sombras melhora o desempenho em PCs
+                antigos.</p>
+        </div>
+
+        <div id="menuCrosshair" class="menu-section">
+            <button class="back-btn" onclick="switchMenuSection('main')">VOLTAR</button>
+            <h2>CONFIGURAR CROSSHAIR</h2>
+            <div class="crosshair-preview">
+                <div id="crosshairPreview">
+                    <div class="crosshair-line crosshair-h"></div>
+                    <div class="crosshair-line crosshair-v"></div>
+                </div>
+            </div>
+            <div class="slider-group">
+                <label>Tamanho <span class="value" id="sizeValue">20</span>px</label>
+                <input type="range" id="crosshairSize" min="10" max="50" value="20">
+            </div>
+            <div class="slider-group">
+                <label>Espessura <span class="value" id="thicknessValue">2</span>px</label>
+                <input type="range" id="crosshairThickness" min="1" max="5" value="2">
+            </div>
+            <div class="slider-group">
+                <label>Opacity <span class="value" id="opacityValue">0.8</span></label>
+                <input type="range" id="crosshairOpacity" min="0" max="1" step="0.1" value="0.8">
+            </div>
+            <div class="color-input-group">
+                <label>Cor</label>
+                <input type="color" id="crosshairColor" value="#ffffff">
+            </div>
+            <button onclick="applyCrosshairSettings()"
+                style="width: 100%; margin-top: 15px; background: #ff00ff;">APLICAR</button>
+        </div>
+
+        <div id="menuSensitivity" class="menu-section">
+            <button class="back-btn" onclick="switchMenuSection('main')">VOLTAR</button>
+            <h2>SENSIBILIDADE DA CÂMERA</h2>
+            <div class="slider-group">
+                <label>Sem Mira <span class="value" id="hipfireSensitivityLabel">2.0</span>x</label>
+                <input type="range" id="hipfireSensitivity" min="0.5" max="4" step="0.1" value="2">
+            </div>
+            <div class="slider-group">
+                <label>Mirando (ADS) <span class="value" id="adsSensitivityLabel">1.2</span>x</label>
+                <input type="range" id="adsSensitivity" min="0.3" max="3" step="0.1" value="1.2">
+            </div>
+            <p style="color:#aaa;font-size:13px;margin-top:12px;">O valor exibido representa a sensibilidade relativa.
+                Ajuste para encontrar o ritmo ideal no mouse.</p>
+        </div>
+    </div>
+
+    <div id="weaponUnlockMenu"
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.95); padding: 40px; border: 3px solid #00ff00; border-radius: 15px; z-index: 10000; text-align: center; pointer-events: all;">
+        <h2 style="color: #00ff00; font-size: 32px; margin-bottom: 20px; text-shadow: 0 0 10px #00ff00;">NOVA ARMA
+            DISPONÍVEL!</h2>
+        <p style="color: white; font-size: 18px; margin-bottom: 30px;">Escolha uma das armas abaixo:</p>
+        <div id="weaponChoices" style="display: flex; gap: 30px; justify-content: center;">
+            <!-- Weapon choice buttons will be inserted here -->
+        </div>
+    </div>
+
+    <div id="upgradeMenu">
+        <h2>MELHORIAS</h2>
+        <div id="upgradePoints">Pontos: 0</div>
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="tabNormal">Normais</button>
+            <button class="tab-btn" id="tabSuper">Super</button>
+        </div>
+        <div id="normalUpgrades" class="tab-content active">
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">SMG - Dano</div>
+                    <div class="upgrade-level" id="smgDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +3 dano por nível</div>
+                </div><button class="upgrade-btn" id="btnSmgDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">SMG - Velocidade</div>
+                    <div class="upgrade-level" id="smgSpeedLevel">0/5</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        -10ms cadência por nível</div>
+                </div><button class="upgrade-btn" id="btnSmgSpeed">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Pistola - Dano</div>
+                    <div class="upgrade-level" id="pistolDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +5 dano por nível</div>
+                </div><button class="upgrade-btn" id="btnPistolDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Rifle - Dano</div>
+                    <div class="upgrade-level" id="rifleDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +5 dano por nível</div>
+                </div><button class="upgrade-btn" id="btnRifleDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Rifle - Velocidade</div>
+                    <div class="upgrade-level" id="rifleSpeedLevel">0/8</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        -20ms cadência por nível</div>
+                </div><button class="upgrade-btn" id="btnRifleSpeed">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Sniper - Dano</div>
+                    <div class="upgrade-level" id="sniperDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +15 dano por nível</div>
+                </div><button class="upgrade-btn" id="btnSniperDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Shotgun - Dano</div>
+                    <div class="upgrade-level" id="shotgunDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +2 dano por pellet</div>
+                </div><button class="upgrade-btn" id="btnShotgunDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Shotgun - Projéteis</div>
+                    <div class="upgrade-level" id="shotgunPelletsLevel">0/6</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +1 projétil por nível</div>
+                </div><button class="upgrade-btn" id="btnShotgunPellets">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Bazuca - Dano</div>
+                    <div class="upgrade-level" id="bazookaDmgLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +25 dano por nível</div>
+                </div><button class="upgrade-btn" id="btnBazookaDmg">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Bazuca - Raio</div>
+                    <div class="upgrade-level" id="bazookaRadiusLevel">0/5</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +1m explosão por nível</div>
+                </div><button class="upgrade-btn" id="btnBazookaRadius">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Munição Extra</div>
+                    <div class="upgrade-level" id="ammoCapLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Aumenta capacidade de pente</div>
+                </div><button class="upgrade-btn" id="btnAmmoCap">+</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">Velocidade de Movimento</div>
+                    <div class="upgrade-level" id="speedLevel">0/10</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        +0.8 velocidade por nível</div>
+                </div><button class="upgrade-btn" id="btnSpeed">+</button>
+            </div>
+        </div>
+        <div id="superUpgrades" class="tab-content">
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Destruidor</div>
+                    <div class="upgrade-level" id="superPistolLevel">15pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Pistola causa 500 de dano (instakill)</div>
+                </div><button class="upgrade-btn" id="btnSuperPistol">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Rajada</div>
+                    <div class="upgrade-level" id="superRifleSpeedLevel">17pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Rifle atira a 100ms (ultra rápido)</div>
+                </div><button class="upgrade-btn" id="btnSuperRifleSpeed">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Munição Inf</div>
+                    <div class="upgrade-level" id="superAmmoLevel">20pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        999 balas em todas as armas</div>
+                </div><button class="upgrade-btn" id="btnSuperAmmo">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Sonic</div>
+                    <div class="upgrade-level" id="superSpeedLevel">15pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Velocidade 2x + pulo duplo</div>
+                </div><button class="upgrade-btn" id="btnSuperSpeed">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Regen</div>
+                    <div class="upgrade-level" id="superRegenLevel">13pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Vida máxima 200 + regeneração</div>
+                </div><button class="upgrade-btn" id="btnSuperRegen">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Explosiva</div>
+                    <div class="upgrade-level" id="superShotgunLevel">18pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        Shotgun dispara 16 projéteis</div>
+                </div><button class="upgrade-btn" id="btnSuperShotgun">C</button>
+            </div>
+            <div class="upgrade-item super-upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name super-upgrade-name">Cluster</div>
+                    <div class="upgrade-level" id="superBazookaLevel">22pts</div>
+                    <div
+                        style="font-size: 13px; color: #ffffff; margin-top: 3px; font-weight: bold; text-shadow: 1px 1px 2px black;">
+                        5 explosões consecutivas por tiro</div>
+                </div><button class="upgrade-btn" id="btnSuperBazooka">C</button>
+            </div>
+        </div>
+        <button id="closeUpgrade">FECHAR (Z)</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/game.js"></script>
+
+    <!-- Integração com a API do backend (sistema de pontuação, conquistas, perfil, etc) -->
+    <script src="api-integration.js"></script>
+
+    <script>
+        // ==========================================
+        // CONFIGURAÇÃO ADICIONAL (SE NECESSÁRIO)
+        // ==========================================
+        // O arquivo api-integration.js externo já contém toda a lógica de integração com a API:
+        // - Sistema de autenticação (checkAuthentication, logout, loadPlayerProfile)
+        // - Sessões de jogo (startGameSession, endGameSession)
+        // - Pontuação e XP (saveHighScore, calculateScore)
+        // - Rastreamento de estatísticas (trackKill, trackShot, trackHit)
+        // - Conquistas (checkAndUnlockAchievements, unlockAchievement)
+        // - Leaderboard (loadLeaderboard, displayLeaderboard)
+        // - Estatísticas de armas (saveWeaponStats)
+        // - Auto-save periódico
+        //
+        // O script se integra automaticamente com as funções do jogo:
+        // gameOver(), shoot(), nextRound(), showDamageNumber(), checkDeadEnemies(), setupStartButton()
+
+        console.log('🎮 Jogo FPS 3D carregado! Sistema de estatísticas via api-integration.js');
+    </script>
+</body>
+<div id="coopRuntimeBadge" class="coop-runtime-badge hidden">
+    <div>
+        <strong id="coopRuntimeRole">MODO SOLO</strong>
+        <small id="coopRuntimeSummary">Nenhum lobby ativo</small>
+    </div>
+    <button type="button" id="coopRuntimeToggle">DETALHES</button>
+</div>
+
+<div id="coopRuntimePanel" class="coop-runtime-panel hidden">
+    <h3 id="coopRuntimePanelTitle">SURVIVAL CO-OP (PREVIEW)</h3>
+    <p id="coopRuntimeStatusText">Sessão solo. Abra o launcher para configurar um lobby.</p>
+    <div class="coop-runtime-grid">
+        <div class="coop-runtime-chip">
+            <div style="font-size:11px; letter-spacing:0.08em; color:#7ffff0;">Função</div>
+            <div id="coopRuntimeRoleValue">Solo</div>
+        </div>
+        <div class="coop-runtime-chip">
+            <div style="font-size:11px; letter-spacing:0.08em; color:#7ffff0;">Porta/IP</div>
+            <div id="coopRuntimeEndpointValue">-</div>
+        </div>
+        <div class="coop-runtime-chip">
+            <div style="font-size:11px; letter-spacing:0.08em; color:#7ffff0;">Jogadores</div>
+            <div id="coopRuntimePlayersValue">0/0</div>
+        </div>
+        <div class="coop-runtime-chip">
+            <div style="font-size:11px; letter-spacing:0.08em; color:#7ffff0;">Atualizado</div>
+            <div id="coopRuntimeHeartbeatValue">--</div>
+        </div>
+        <div class="coop-runtime-chip">
+            <div style="font-size:11px; letter-spacing:0.08em; color:#7ffff0;">WebSocket</div>
+            <div id="coopRuntimeSocketStateValue">Offline</div>
+        </div>
+    </div>
+    <button type="button" class="secondary" id="coopRuntimeReadyBtn">Marcar como pronto</button>
+    <div class="coop-runtime-player-list" id="coopRuntimePlayersList">
+        <div class="coop-runtime-empty">Aguardando jogadores conectarem...</div>
+    </div>
+    <button type="button" class="primary" id="coopRuntimeRefreshBtn">Atualizar presença</button>
+    <button type="button" class="secondary" id="coopRuntimeLeaveBtn">Sair do modo co-op</button>
+</div>
+
+</html>

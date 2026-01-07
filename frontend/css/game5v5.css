@@ -1,0 +1,361 @@
+﻿* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+            background: #05070d;
+        }
+
+        #hud {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            color: #f5f5f5;
+            font-weight: 600;
+        }
+
+        #scoreboard {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+            align-items: center;
+
+        #minimap {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 200px;
+            height: 200px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(3, 7, 12, 0.78);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+        }
+
+        #spectatorOverlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 16px 28px;
+            background: rgba(5, 7, 13, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+            letter-spacing: 0.25em;
+            font-size: 13px;
+            color: #9dcfff;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        #spectatorOverlay.visible {
+            opacity: 1;
+        }
+            padding: 12px 24px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(12px);
+        }
+
+        .team-tag {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .team-score {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        #roundInfo {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            letter-spacing: 0.3em;
+            color: #a4b8ff;
+        }
+
+        #phaseTimer {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            letter-spacing: 0.2em;
+            color: #ffffff;
+            text-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
+        }
+
+        #objectiveInfo {
+            position: absolute;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 15px;
+            color: #c7d3ff;
+            letter-spacing: 0.08em;
+        }
+
+        #healthBar {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 280px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+        }
+
+        #healthFill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff4343, #00ff95);
+            transition: width 0.2s ease;
+        }
+
+        #ammo, #weapon {
+            position: absolute;
+            bottom: 120px;
+            left: 40px;
+            font-size: 22px;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+        }
+
+        #weapon {
+            bottom: 150px;
+            font-size: 18px;
+            color: #a9ffef;
+        }
+
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+        }
+
+        .crosshair-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .crosshair-h {
+            width: 24px;
+            height: 2px;
+            top: 11px;
+            left: 0;
+        }
+
+        .crosshair-v {
+            width: 2px;
+            height: 24px;
+            top: 0;
+            left: 11px;
+        }
+
+        #killfeed {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .killfeed-entry {
+            text-align: right;
+            font-size: 14px;
+            color: #f5f5f5;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+        }
+
+        #startScreen {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(10, 14, 22, 0.95), rgba(3, 5, 11, 0.98));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10;
+            color: white;
+        }
+
+        #startScreen h1 {
+            font-size: 56px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: #00ffd5;
+        }
+
+        #startScreen p {
+            width: min(540px, 90%);
+            text-align: center;
+            color: #c7d6ff;
+            line-height: 1.6;
+        }
+
+        #startButton {
+            pointer-events: all;
+            padding: 14px 48px;
+            font-size: 18px;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(90deg, #00ffd5, #00ffa0);
+            color: #021b1a;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.2em;
+        }
+
+        #roundMessage {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 42px;
+            letter-spacing: 0.4em;
+            text-align: center;
+            color: #ffffff;
+            text-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+            display: none;
+        }
+
+        #cashDisplay {
+            position: absolute;
+            bottom: 200px;
+            left: 40px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fdda75;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+        }
+
+        #buyPanel {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 360px;
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(3, 8, 15, 0.92);
+            border: 1px solid rgba(0, 255, 213, 0.25);
+            color: #e6fff9;
+            font-size: 14px;
+            display: none;
+            pointer-events: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .buy-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #73ffe0;
+        }
+
+        .buy-cash-value {
+            font-size: 20px;
+            color: #fdda75;
+        }
+
+        .buy-tabs {
+            display: flex;
+            gap: 8px;
+            margin: 14px 0;
+            flex-wrap: wrap;
+        }
+
+        .buy-tab {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            font-size: 12px;
+            cursor: pointer;
+            letter-spacing: 0.08em;
+            transition: all 0.2s ease;
+        }
+
+        .buy-tab.active {
+            border-color: rgba(0, 255, 213, 0.4);
+            background: rgba(0, 255, 213, 0.12);
+        }
+
+        .buy-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .buy-card {
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: border 0.2s ease, transform 0.1s ease;
+        }
+
+        .buy-card h4 {
+            font-size: 14px;
+            letter-spacing: 0.08em;
+            color: #f4fbff;
+        }
+
+        .buy-card p {
+            font-size: 12px;
+            margin-top: 6px;
+            color: #c6d2ff;
+        }
+
+        .buy-card .cost {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #fdda75;
+        }
+
+        .buy-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .buy-card.owned {
+            border-color: rgba(0, 255, 170, 0.5);
+        }
+
+        .buy-footer {
+            margin-top: 12px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            color: #a7b3d4;
+        }

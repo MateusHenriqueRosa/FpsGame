@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS 3D - Battle Royale</title>
+    <link rel="stylesheet" href="css/gamebt.css">
+</head>
+
+<body>
+    <div id="startScreen">
+        <h1>BATTLE ROYALE</h1>
+        <h2>10 Jogadores - 1 Sobrevivente</h2>
+        <p>WASD - Mover | Mouse - Olhar | Click - Atirar | 1-6 - Armas</p>
+        <p>R - Recarregar | E - Pegar Item | Espaço - Pular</p>
+        <p>Encontre armas e elimine todos os oponentes!</p>
+        <button id="startButton">ENTRAR NA PARTIDA</button>
+        <button onclick="window.location.href='index.html'" style="margin-top: 15px; padding: 15px 40px; font-size: 20px; background: transparent; color: #fff; border: 2px solid #fff; border-radius: 10px; cursor: pointer; font-weight: bold; transition: all 0.3s; pointer-events: all;">VOLTAR AO MENU</button>
+    </div>
+
+    <div id="hud">
+        <div id="playersAlive">Jogadores: 10</div>
+        <div id="kills">Eliminações: 0</div>
+        <div id="weapon">Arma: Punhos</div>
+        <div id="ammo">Munição: 0/0</div>
+        <div id="healthBar">
+            <div id="healthFill"></div>
+        </div>
+        <div id="healthText"></div>
+        <div id="crosshair">
+            <div class="crosshair-line crosshair-h"></div>
+            <div class="crosshair-line crosshair-v"></div>
+        </div>
+        <div id="message"></div>
+        <div id="reloadBar">
+            <div id="reloadFill"></div>
+        </div>
+        <canvas id="minimap"></canvas>
+        <div id="leaderboard">
+            <h3>🏆 RANKING</h3>
+            <div id="leaderboardContent"></div>
+        </div>
+    </div>
+
+    <div id="gameOverScreen">
+        <h1 id="gameOverTitle">VOCÊ MORREU</h1>
+        <div class="stats" id="finalPosition">Posição Final: #0</div>
+        <div class="stats" id="finalKills">Eliminações: 0</div>
+        <div class="stats" id="survivalTime">Tempo: 00:00</div>
+        <button id="restartButton">JOGAR NOVAMENTE</button>
+        <button onclick="window.location.href='index.html'" style="background:#444;margin-top:10px;">VOLTAR AO MENU</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="api-integration.js"></script>
+    <script src="js/gamebt.js"></script>
+</body>
+
+</html>

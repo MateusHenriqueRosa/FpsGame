@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPS 3D - Tático 5v5</title>
+    <link rel="stylesheet" href="css/game5v5.css">
+</head>
+
+<body>
+    <div id="hud">
+        <div id="scoreboard">
+            <div class="team-tag" id="alphaTag">
+                <span style="width:12px;height:12px;border-radius:50%;display:inline-block;background:#00c6ff;"></span>
+                VANGUARD
+            </div>
+            <div class="team-score" id="alphaScore">0</div>
+            <div style="font-size:14px;color:#6f7cff;">vs</div>
+            <div class="team-score" id="bravoScore">0</div>
+            <div class="team-tag" id="bravoTag">
+                LEGION
+                <span style="width:12px;height:12px;border-radius:50%;display:inline-block;background:#ff4d4d;"></span>
+            </div>
+        </div>
+        <div id="roundInfo">ROUND 1 • FASE PREPARAÇÃO</div>
+        <div id="phaseTimer">00:12</div>
+        <div id="objectiveInfo">Escolha armas e prepare sua equipe.</div>
+        <div id="roundMessage"></div>
+        <div id="healthBar"><div id="healthFill"></div></div>
+        <div id="weapon">Rifle</div>
+        <div id="ammo">30 / ∞</div>
+        <div id="cashDisplay">$ 650</div>
+        <div id="buyPanel">
+            <div class="buy-header">
+                <span>Fase de Compra</span>
+                <span class="buy-cash-value" id="buyCash">$ 650</span>
+            </div>
+            <div class="buy-tabs" id="buyTabs"></div>
+            <div class="buy-grid" id="buyItems"></div>
+            <div class="buy-footer">Use o mouse para comprar ou pressione B para reabrir o menu.</div>
+        </div>
+        <div id="killfeed"></div>
+        <div id="crosshair">
+            <div class="crosshair-line crosshair-h"></div>
+            <div class="crosshair-line crosshair-v"></div>
+        </div>
+        <canvas id="minimap" width="200" height="200"></canvas>
+        <div id="spectatorOverlay">VISÃO AÉREA - AGUARDE O PRÓXIMO ROUND</div>
+    </div>
+
+    <div id="startScreen">
+        <h1>TACTICAL 5V5</h1>
+        <p>Modo inspirado em CS:GO, Valorant, Rainbow Six, Call of Duty, Krunker e Shell Shockers. As mesmas mecânicas de tiro, recuo e movimentação do modo Sobrevivência combinadas com IA agressiva do Battle Royale.</p>
+        <button id="startButton">INICIAR PARTIDA</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/game5v5.js"></script>
+    <script src="api-integration.js"></script>
+    <script>
+        console.log('Modo tático 5v5 carregado');
+    </script>
+</body>
+
+</html>
+

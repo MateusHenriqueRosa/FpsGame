@@ -1,0 +1,863 @@
+﻿* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background: #000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .coop-runtime-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1200;
+            background: rgba(5, 20, 30, 0.92);
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            border-radius: 14px;
+            padding: 12px 18px;
+            color: #cffff4;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            pointer-events: auto;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        .coop-runtime-badge strong {
+            letter-spacing: 0.12em;
+            font-size: 12px;
+            display: block;
+            color: #00ffd0;
+        }
+
+        .coop-runtime-badge small {
+            display: block;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .coop-runtime-badge button {
+            background: linear-gradient(120deg, #00ffd0, #0080ff);
+            border: none;
+            color: #04161a;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+        }
+
+        .coop-runtime-panel {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 320px;
+            max-width: calc(100% - 40px);
+            background: rgba(2, 10, 18, 0.95);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 18px;
+            padding: 20px;
+            color: #e5ffff;
+            z-index: 1201;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+        }
+
+        .coop-runtime-panel h3 {
+            margin: 0 0 10px 0;
+            letter-spacing: 0.12em;
+            font-size: 14px;
+            color: #89ffe9;
+        }
+
+        .coop-runtime-panel p {
+            margin: 6px 0;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .coop-runtime-panel .coop-runtime-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .coop-runtime-chip {
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 12px;
+        }
+
+        .coop-runtime-panel button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .coop-runtime-panel button.primary {
+            background: linear-gradient(120deg, #00ffd0, #1a9bff);
+            color: #021210;
+        }
+
+        .coop-runtime-panel button.secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #dff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .coop-runtime-panel button.ready-active {
+            background: rgba(0, 255, 208, 0.18);
+            color: #00ffd0;
+            border-color: rgba(0, 255, 208, 0.4);
+        }
+
+        .coop-runtime-player-list {
+            margin-top: 14px;
+            border: 1px solid rgba(0, 255, 204, 0.15);
+            border-radius: 12px;
+            padding: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            background: rgba(0, 10, 16, 0.65);
+        }
+
+        .coop-runtime-player {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 8px;
+        }
+
+        .coop-runtime-player:last-child {
+            margin-bottom: 0;
+        }
+
+        .coop-runtime-player strong {
+            display: block;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+
+        .coop-runtime-player small {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+        }
+
+        .coop-runtime-player .skin-chip-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .coop-runtime-player .skin-chip {
+            width: 16px;
+            height: 16px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .coop-runtime-player .skin-chip.head {
+            border-color: rgba(255, 255, 255, 0.55);
+        }
+
+        .coop-runtime-player .progression-metrics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .coop-runtime-player .progression-chip {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 3px 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .coop-runtime-player .progression-chip.super {
+            border-color: rgba(0, 255, 213, 0.45);
+            color: #00ffd5;
+            background: rgba(0, 255, 213, 0.12);
+        }
+
+        .coop-sync-indicator {
+            position: absolute;
+            top: 150px;
+            left: 30px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 230, 0.5);
+            background: rgba(0, 0, 0, 0.65);
+            color: #9efff5;
+            font-size: 12px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+
+        .coop-sync-indicator.visible {
+            opacity: 1;
+        }
+
+        .coop-runtime-player .status {
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .coop-runtime-player .status.ready {
+            background: rgba(0, 255, 170, 0.16);
+            border-color: rgba(0, 255, 170, 0.4);
+            color: #00ff9e;
+        }
+
+        .coop-runtime-player .status.pending {
+            background: rgba(255, 167, 0, 0.12);
+            border-color: rgba(255, 167, 0, 0.35);
+            color: #ffcc7d;
+        }
+
+        .coop-runtime-empty {
+            text-align: center;
+            font-size: 12px;
+            padding: 18px 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .x1-kill-board {
+            position: absolute;
+            top: 200px;
+            left: 30px;
+            width: 240px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 157, 0, 0.6);
+            background: rgba(0, 0, 0, 0.75);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 900;
+        }
+
+        .x1-kill-title {
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+            color: #ffbe55;
+            text-transform: uppercase;
+        }
+
+        .x1-kill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .x1-kill-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+        }
+
+        .x1-kill-row.leader {
+            border-color: rgba(255, 189, 89, 0.7);
+            background: rgba(255, 189, 89, 0.15);
+        }
+
+        .x1-kill-row.self {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .x1-kill-name {
+            flex: 1;
+        }
+
+        .x1-kill-value {
+            font-weight: 700;
+            margin-left: 10px;
+            color: #ffe6c0;
+        }
+
+        .x1-kill-empty {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.75);
+            text-align: center;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        #healthBar {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 300px;
+            height: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #healthFill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #00ff00);
+            width: 100%;
+            transition: width 0.3s;
+        }
+
+        #ammo {
+            position: absolute;
+            bottom: 70px;
+            left: 30px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #weapon {
+            position: absolute;
+            bottom: 100px;
+            left: 30px;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #round {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 32px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #enemies {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #upgradePointsHUD {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #00ffff;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        .crosshair-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .crosshair-h {
+            width: 20px;
+            height: 2px;
+            top: 9px;
+            left: 0;
+        }
+
+        .crosshair-v {
+            width: 2px;
+            height: 20px;
+            top: 0;
+            left: 9px;
+        }
+
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            text-shadow: 3px 3px 6px #000;
+            display: none;
+            text-align: center;
+        }
+
+        #healthText {
+            position: absolute;
+            bottom: 35px;
+            left: 340px;
+            font-size: 18px;
+            color: white;
+        }
+
+        #reloadBar {
+            position: absolute;
+            bottom: 160px;
+            left: 30px;
+            width: 200px;
+            height: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #reloadFill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #00ff00);
+            width: 0%;
+        }
+
+        .damage-number {
+            position: absolute;
+            color: #ff0000;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px #000;
+            pointer-events: none;
+            animation: damageFloat 1s ease-out forwards;
+        }
+
+        @keyframes damageFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.5);
+            }
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #startScreen h1 {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #00ff00;
+        }
+
+        #startScreen p {
+            font-size: 20px;
+            margin: 10px;
+            color: #fff;
+        }
+
+        .mode-variant-banner {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mode-variant-badge {
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            font-size: 15px;
+        }
+
+        .mode-variant-copy {
+            font-size: 14px;
+            color: #e0ffee;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        #startButton {
+            margin-top: 30px;
+            padding: 20px 40px;
+            font-size: 24px;
+            background: #00ff00;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            pointer-events: all;
+            font-weight: bold;
+        }
+
+        #startButton:hover {
+            background: #00cc00;
+        }
+
+        #mapSelector {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #00ff00;
+        }
+
+        #mapSelector h2 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        #mapSelector button {
+            margin: 5px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background: #444;
+            color: white;
+            border: 2px solid #666;
+            border-radius: 8px;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        #mapSelector button:hover {
+            background: #555;
+            border-color: #00ff00;
+        }
+
+        #mapSelector input[type="file"] {
+            display: none;
+        }
+
+        #mapSelector .selected-map {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.2);
+            border-radius: 5px;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        #mainMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #ff00ff;
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            display: none;
+            z-index: 1001;
+            min-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            pointer-events: all;
+        }
+
+        #mainMenu h2 {
+            text-align: center;
+            color: #ff00ff;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        #mainMenu button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            background: #ff00ff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        #mainMenu button:hover {
+            background: #cc00cc;
+        }
+
+        #mainMenu button.secondary {
+            background: #444;
+        }
+
+        #mainMenu button.secondary:hover {
+            background: #555;
+        }
+
+        #mainMenu button.danger {
+            background: #ff0000;
+        }
+
+        #mainMenu button.danger:hover {
+            background: #cc0000;
+        }
+
+        #mainMenu .menu-section {
+            display: none;
+        }
+
+        #mainMenu .menu-section.active {
+            display: block;
+        }
+
+        #mainMenu .back-btn {
+            background: #666;
+            margin-bottom: 20px;
+        }
+
+        .crosshair-preview {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff00ff;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .crosshair-preview #crosshairPreview {
+            position: absolute;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            align-items: center;
+        }
+
+        .color-input-group label {
+            flex: 1;
+            color: #aaa;
+        }
+
+        .color-input-group input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .slider-group {
+            margin: 15px 0;
+        }
+
+        .slider-group label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            accent-color: #ff00ff;
+        }
+
+        .upgrade-btn {
+            background: #00ff00;
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            margin-left: 10px;
+            pointer-events: all;
+        }
+
+        .upgrade-btn:hover {
+            background: #00cc00;
+        }
+
+        .upgrade-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        #closeUpgrade {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ff0000;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        #closeUpgrade:hover {
+            background: #cc0000;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .tab-btn.active {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .super-upgrade-item {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+            border: 2px solid #ffd700;
+        }
+
+        .super-upgrade-name {
+            color: #ffd700;
+        }
+
+        #weaponDisplay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
+        }
+
+        /* Compact upgrade menu so it doesn't block the whole screen */
+        #upgradeMenu {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #00ff00;
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 1002;
+            display: none;
+            /* toggled with toggleUpgradeMenu() */
+            pointer-events: auto;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .upgrade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .upgrade-level {
+            font-size: 14px;
+            color: #00ff00;
+        }
+
+        .upgrade-desc {
+            font-size: 12px;
+            color: #ffffff;
+            margin-top: 3px;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px #000;
+        }

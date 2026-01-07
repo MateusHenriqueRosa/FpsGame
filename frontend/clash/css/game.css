@@ -1,0 +1,190 @@
+/* Tela de Jogo */
+#gameScreen {
+    padding: 0;
+    background: none;
+}
+
+.game-ui {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 10;
+}
+
+.player-hp, .enemy-hp {
+    display: flex;
+    gap: 10px;
+}
+
+.tower {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.tower.king {
+    color: #FFD700;
+}
+
+.timer {
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+.bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.elixir-bar {
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 10px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.elixir-count {
+    color: #9c88ff;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.elixir-progress {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.elixir-progress::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #9c88ff, #667eea);
+    width: var(--elixir-width, 100%);
+    transition: width 0.3s ease;
+}
+
+.hand {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    flex: 1;
+}
+
+.hand-card {
+    width: 60px;
+    height: 80px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hand-card:hover {
+    transform: translateY(-10px);
+}
+
+.hand-card.selected {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.hand-card .card-icon {
+    font-size: 1.2em;
+    margin-bottom: 2px;
+}
+
+.hand-card .card-name {
+    font-size: 0.6em;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    line-height: 1;
+    margin-top: 2px;
+}
+
+.hand-card .card-cost {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7em;
+}
+
+/* Tela de Resultado */
+#resultScreen {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.result-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+#resultTitle {
+    color: white;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.result-stats {
+    margin: 20px 0;
+}
+
+.trophy-change, .gold-earned {
+    color: white;
+    font-size: 1.3em;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .hand {
+        gap: 5px;
+    }
+    
+    .hand-card {
+        width: 50px;
+        height: 70px;
+    }
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clash Royale Clone</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/menu.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/chests.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Menu Principal -->
+        <div id="mainMenu" class="screen active">
+            <h1>⚔️ Clash Royale Clone</h1>
+            <div class="player-info">
+                <div class="trophies">🏆 <span id="trophyCount">0</span></div>
+                <div class="arena-name" id="arenaName">Arena dos Goblins</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Ouro</div>
+                        <div class="stat-value">💰 <span id="goldCountMenu">1000</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vitórias</div>
+                        <div class="stat-value">⚔️ <span id="winsCount">0</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Derrotas</div>
+                        <div class="stat-value">💀 <span id="lossesCount">0</span></div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Cartas</div>
+                        <div class="stat-value">🃏 <span id="cardCount">10</span></div>
+                    </div>
+                </div>
+            </div>
+            <button id="playButton" class="btn-primary">JOGAR</button>
+            <button id="cardsButton" class="btn-secondary">CARTAS</button>
+            <button id="chestsButton" class="btn-secondary">BAÚS</button>
+            <button id="resetButton" class="btn-danger">RESETAR PROGRESSO</button>
+        </div>
+
+        <!-- Tela de Cartas -->
+        <div id="cardsScreen" class="screen">
+            <div class="screen-header">
+                <button id="backFromCards" class="btn-back">←</button>
+                <h2>Suas Cartas</h2>
+                <div class="cards-gold">💰 <span id="goldCountCards">1000</span></div>
+            </div>
+            
+            <div class="cards-layout">
+                <!-- Área do Deck -->
+                <div class="deck-area">
+                    <h3>Seu Deck (8 cartas)</h3>
+                    <div class="deck-counter">
+                        <span id="deckCount">0</span>/8 cartas
+                    </div>
+                    <div id="deckSlots" class="deck-slots">
+                        <div class="deck-slot empty" data-slot="0">
+                            <div class="slot-number">1</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="1">
+                            <div class="slot-number">2</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="2">
+                            <div class="slot-number">3</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="3">
+                            <div class="slot-number">4</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="4">
+                            <div class="slot-number">5</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="5">
+                            <div class="slot-number">6</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="6">
+                            <div class="slot-number">7</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                        <div class="deck-slot empty" data-slot="7">
+                            <div class="slot-number">8</div>
+                            <div class="slot-hint">Arraste uma carta</div>
+                        </div>
+                    </div>
+                    <button id="saveDeckBtn" class="btn-primary" disabled>SALVAR DECK</button>
+                </div>
+                
+                <!-- Coleção de Cartas -->
+                <div class="collection-area">
+                    <h3>Coleção de Cartas</h3>
+                    <div id="cardCollection" class="card-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes da Carta -->
+        <div id="cardDetailModal" class="modal">
+            <div class="modal-content card-detail-content">
+                <button id="closeCardDetail" class="close-btn">×</button>
+                
+                <div class="card-detail-header">
+                    <div id="detailCardIcon" class="detail-card-icon">🛡️</div>
+                    <div class="card-info">
+                        <h3 id="detailCardName">Cavaleiro</h3>
+                        <div id="detailCardRarity" class="rarity-badge common">Comum</div>
+                        <div id="detailCardLevel" class="card-level-display">Nível 1</div>
+                        <div id="detailCardCost" class="card-cost-display">💜 3</div>
+                    </div>
+                </div>
+                
+                <div class="card-stats">
+                    <div class="stat-row">
+                        <span class="stat-label">❤️ Vida:</span>
+                        <span id="detailCardHp" class="stat-value">100</span>
+                        <span id="detailCardHpNext" class="stat-next">→ 110</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">⚔️ Dano:</span>
+                        <span id="detailCardDamage" class="stat-value">25</span>
+                        <span id="detailCardDamageNext" class="stat-next">→ 28</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">🏃 Velocidade:</span>
+                        <span id="detailCardSpeed" class="stat-value">1.0</span>
+                        <span id="detailCardSpeedNext" class="stat-next"></span>
+                    </div>
+                    <div class="stat-row" id="detailCardRangeRow" style="display: none;">
+                        <span class="stat-label">🎯 Alcance:</span>
+                        <span id="detailCardRange" class="stat-value">3</span>
+                        <span id="detailCardRangeNext" class="stat-next"></span>
+                    </div>
+                </div>
+                
+                <div class="upgrade-section">
+                    <div class="card-progress-bar">
+                        <div class="progress-text">
+                            <span id="detailCardProgress">5/10</span>
+                            <span>cartas para próximo nível</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="detailProgressFill" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-cost-section">
+                        <div id="detailUpgradeCost" class="upgrade-cost-display">💰 200</div>
+                        <button id="upgradeCardBtn" class="upgrade-card-btn">MELHORAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Baús -->
+        <div id="chestsScreen" class="screen">
+            <div class="screen-header">
+                <button id="backFromChests" class="btn-back">←</button>
+                <h2>Baús</h2>
+                <div class="chest-gold">💰 <span id="goldCountChests">1000</span></div>
+            </div>
+            
+            <div class="chests-container">
+                <div class="chest-shop">
+                    <h3>Loja de Baús</h3>
+                    <div class="chest-grid">
+                        <div class="chest-item" data-chest="common">
+                            <div class="chest-icon">📦</div>
+                            <div class="chest-name">Baú Comum</div>
+                            <div class="chest-price">💰 50</div>
+                            <div class="chest-rewards">3-6 cartas</div>
+                            <div class="chest-rarities">Comuns e Raras</div>
+                            <button class="buy-chest-btn" data-chest="common">COMPRAR</button>
+                        </div>
+                        
+                        <div class="chest-item" data-chest="rare">
+                            <div class="chest-icon">🎁</div>
+                            <div class="chest-name">Baú Raro</div>
+                            <div class="chest-price">💰 150</div>
+                            <div class="chest-rewards">6-12 cartas</div>
+                            <div class="chest-rarities">Comuns, Raras e Épicas</div>
+                            <button class="buy-chest-btn" data-chest="rare">COMPRAR</button>
+                        </div>
+                        
+                        <div class="chest-item" data-chest="epic">
+                            <div class="chest-icon">💎</div>
+                            <div class="chest-name">Baú Épico</div>
+                            <div class="chest-price">💰 400</div>
+                            <div class="chest-rewards">10-18 cartas</div>
+                            <div class="chest-rarities">Todas as raridades!</div>
+                            <button class="buy-chest-btn" data-chest="epic">COMPRAR</button>
+                        </div>
+                        
+                        <div class="chest-item" data-chest="legendary">
+                            <div class="chest-icon">👑</div>
+                            <div class="chest-name">Baú Lendário</div>
+                            <div class="chest-price">💰 1000</div>
+                            <div class="chest-rewards">15-25 cartas</div>
+                            <div class="chest-rarities">Alta chance de Lendárias!</div>
+                            <button class="buy-chest-btn" data-chest="legendary">COMPRAR</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="owned-chests">
+                    <h3>Seus Baús</h3>
+                    <div id="ownedChestsList" class="owned-chests-grid">
+                        <div class="no-chests">Nenhum baú disponível</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Abertura de Baú -->
+        <div id="chestOpenModal" class="modal">
+            <div class="modal-content">
+                <div class="chest-opening">
+                    <div id="openingChestIcon" class="opening-chest-icon">📦</div>
+                    <h3 id="openingChestName">Abrindo Baú...</h3>
+                    <div class="opening-animation">
+                        <div class="sparkle">✨</div>
+                        <div class="sparkle">⭐</div>
+                        <div class="sparkle">💫</div>
+                    </div>
+                </div>
+                
+                <div id="chestRewards" class="chest-rewards-display" style="display: none;">
+                    <h3>Recompensas!</h3>
+                    <div id="rewardsList" class="rewards-list"></div>
+                    <button id="collectRewards" class="btn-primary">COLETAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Jogo -->
+        <div id="gameScreen" class="screen">
+            <div class="game-ui">
+                <div class="top-bar">
+                    <div class="player-hp">
+                        <div class="tower" id="playerTower1">🏰 <span>100</span></div>
+                        <div class="tower king" id="playerKing">👑 <span>200</span></div>
+                        <div class="tower" id="playerTower2">🏰 <span>100</span></div>
+                    </div>
+                    <div class="timer" id="gameTimer">3:00</div>
+                    <div class="enemy-hp">
+                        <div class="tower" id="enemyTower1">🏰 <span>100</span></div>
+                        <div class="tower king" id="enemyKing">👑 <span>200</span></div>
+                        <div class="tower" id="enemyTower2">🏰 <span>100</span></div>
+                    </div>
+                </div>
+                
+                <div id="gameCanvas"></div>
+                
+                <div class="bottom-bar">
+                    <div class="elixir-bar">
+                        <div class="elixir-count" id="elixirCount">10</div>
+                        <div class="elixir-progress" id="elixirProgress"></div>
+                    </div>
+                    <div class="hand" id="cardHand"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Resultado -->
+        <div id="resultScreen" class="screen">
+            <div class="result-content">
+                <h2 id="resultTitle">VITÓRIA!</h2>
+                <div class="result-stats">
+                    <div class="trophy-change" id="trophyChange">+30 🏆</div>
+                    <div class="gold-earned" id="goldEarned">+50 💰</div>
+                </div>
+                <button id="continueButton" class="btn-primary">CONTINUAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/gameState.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/cards.js"></script>
+    <script src="js/chests.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
