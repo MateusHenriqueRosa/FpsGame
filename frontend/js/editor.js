@@ -271,7 +271,23 @@ function setEditorMode(mode) {
         battleEditorActivated = true;
     }
 
+    // Automaticamente mostrar a aba relevante ao trocar de modo
+    // Para X1 e Tactical, mostrar a aba de Inimigos (spawns)
+    // Para Survival e Battle Royale, manter na aba de Objetos
+    if (normalized === 'x1' || normalized === 'tactical') {
+        switchEditorTab('enemies');
+    }
+
     cancelPlacementModes();
+
+    // Feedback visual
+    const modeNames = {
+        survival: 'Sobrevivência',
+        x1: 'Duelo X1',
+        tactical: 'Tático 5v5',
+        battleRoyale: 'Battle Royale'
+    };
+    showMessage(`Modo alterado para: ${modeNames[normalized]}`, 1500);
 }
 
 function switchEditorTab(tab) {
