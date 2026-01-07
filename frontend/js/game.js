@@ -2263,7 +2263,15 @@ function applyEnemyDamageToTarget(target, damage, meta = {}) {
         });
         updateHUD();
         if (playerConfig.health <= 0) {
-            gameOver();
+            // No modo X1, usar sistema de respawn com cooldown
+            if (IS_X1_MODE) {
+                scheduleX1Respawn('Você foi derrotado!', X1_RESPAWN_DELAY_MS, getLocalPlayerId(), {
+                    showMessage: true,
+                    broadcast: true
+                });
+            } else {
+                gameOver();
+            }
         }
         return;
     }
@@ -2300,9 +2308,20 @@ function updateEnemies(delta) {
     }
     const now = Date.now();
     const targets = buildCoopThreatTargets();
+    
+    // Garantir que o mapa esteja carregado antes de mover inimigos
+    if (!mapLoaded || collidableObjects.length === 0) return;
+    
     enemies.forEach(enemy => {
         const d = enemy.userData;
-        if (!d.onGround) d.velocity.y -= playerConfig.gravity * delta;
+        
+        // Aplicar gravidade
+        if (!d.onGround) {
+            d.velocity.y -= playerConfig.gravity * delta;
+            // Limitar velocidade de queda para evitar atravessar o chão
+            d.velocity.y = Math.max(d.velocity.y, -50);
+        }
+        
         const preferredTarget = pickClosestTarget(enemy.position, targets) || {
             playerId: getLocalPlayerId(),
             position: playerConfig.position.clone(),
@@ -2322,28 +2341,54 @@ function updateEnemies(delta) {
         }
         d.velocity.x = moveDir.x * d.speed;
         d.velocity.z = moveDir.z * d.speed;
-        enemy.position.add(d.velocity.clone().multiplyScalar(delta));
-        d.onGround = false;
-        const enemyBox = new THREE.Box3().setFromCenterAndSize(enemy.position.clone().add(new THREE.Vector3(0, 1, 0)), new THREE.Vector3(1, 2, 1));
-        collidableObjects.forEach(box => {
-            if (enemyBox.intersectsBox(box)) {
-                const intersection = enemyBox.clone().intersect(box);
-                const pen = new THREE.Vector3();
-                intersection.getSize(pen);
-                if (pen.x < pen.y && pen.x < pen.z) {
-                    enemy.position.x += pen.x * Math.sign(enemy.position.x - box.getCenter(new THREE.Vector3()).x);
-                    d.velocity.x = 0;
-                } else if (pen.y < pen.z) {
-                    const sign = Math.sign(enemy.position.y - box.getCenter(new THREE.Vector3()).y);
-                    enemy.position.y += pen.y * sign;
-                    if (sign > 0) d.onGround = true;
-                    d.velocity.y = 0;
-                } else {
-                    enemy.position.z += pen.z * Math.sign(enemy.position.z - box.getCenter(new THREE.Vector3()).z);
-                    d.velocity.z = 0;
+        
+        // Sub-stepping para evitar atravessar o chão (tunneling)
+        const displacement = d.velocity.clone().multiplyScalar(delta);
+        const steps = Math.max(1, Math.ceil(displacement.length() / 0.5));
+        const stepDisplacement = displacement.clone().divideScalar(steps);
+        
+        for (let step = 0; step < steps; step++) {
+            enemy.position.add(stepDisplacement);
+            d.onGround = false;
+            
+            const enemyBox = new THREE.Box3().setFromCenterAndSize(
+                enemy.position.clone().add(new THREE.Vector3(0, 1, 0)),
+                new THREE.Vector3(1, 2, 1)
+            );
+            
+            collidableObjects.forEach(box => {
+                if (enemyBox.intersectsBox(box)) {
+                    const intersection = enemyBox.clone().intersect(box);
+                    const pen = new THREE.Vector3();
+                    intersection.getSize(pen);
+                    const center = box.getCenter(new THREE.Vector3());
+                    
+                    if (pen.x < pen.y && pen.x < pen.z) {
+                        enemy.position.x += pen.x * Math.sign(enemy.position.x - center.x);
+                        d.velocity.x = 0;
+                    } else if (pen.y < pen.z) {
+                        const sign = Math.sign(enemy.position.y - center.y);
+                        enemy.position.y += pen.y * sign;
+                        if (sign > 0) {
+                            d.onGround = true;
+                            d.velocity.y = 0;
+                        } else {
+                            d.velocity.y = 0;
+                        }
+                    } else {
+                        enemy.position.z += pen.z * Math.sign(enemy.position.z - center.z);
+                        d.velocity.z = 0;
+                    }
                 }
-            }
-        });
+            });
+        }
+        
+        // Floor clamping de segurança: garantir que inimigos nunca fiquem abaixo de Y=0
+        if (enemy.position.y < 0) {
+            enemy.position.y = 0.1;
+            d.velocity.y = 0;
+            d.onGround = true;
+        }
         if (d.isRanged) {
             if (now - d.lastAttack > d.attackCooldown) {
                 d.lastAttack = now;
@@ -2797,6 +2842,8 @@ function syncRemoteEnemiesFromSnapshot(list = []) {
 
 function syncRemoteLootFromSnapshot(list = []) {
     if (coopRuntime.intent?.role !== 'client') return;
+    if (!Array.isArray(list)) return;
+    
     const hostLootIds = new Set(list.map(l => l.id));
 
     // Remover loots que não existem mais no host (foram coletados)
@@ -2811,16 +2858,20 @@ function syncRemoteLootFromSnapshot(list = []) {
     // Adicionar/atualizar loots do host
     const localLootIds = new Set(lootItems.map(l => l.userData.id));
     list.forEach(state => {
-        if (!state || !state.id) return;
+        if (!state || !state.id || !state.type) return;
+        if (!Array.isArray(state.position) || state.position.length !== 3) return;
 
         if (!localLootIds.has(state.id)) {
-            // Criar novo loot
+            // Criar novo loot para o cliente
             const pos = new THREE.Vector3(state.position[0], state.position[1], state.position[2]);
-            spawnLoot(state.type, pos, { lootId: state.id, replica: true });
+            const newLoot = spawnLoot(state.type, pos, { lootId: state.id, replica: true });
+            if (newLoot) {
+                console.log(`[Co-Op Cliente] Loot ${state.id} (${state.type}) sincronizado`);
+            }
         } else {
             // Atualizar posição se necessário (loots geralmente são estáticos)
             const existing = lootItems.find(l => l.userData.id === state.id);
-            if (existing && Array.isArray(state.position) && state.position.length === 3) {
+            if (existing) {
                 existing.position.set(state.position[0], state.position[1], state.position[2]);
             }
         }
@@ -4404,7 +4455,15 @@ function handleRemotePlayerDamageEvent(data = {}) {
         playerConfig.health = Math.min(playerConfig.maxHealth, remaining);
         updateHUD();
         if (playerConfig.health <= 0) {
-            gameOver();
+            // No modo X1, usar sistema de respawn com cooldown de 5 segundos
+            if (IS_X1_MODE) {
+                scheduleX1Respawn('Você foi derrotado!', X1_RESPAWN_DELAY_MS, getLocalPlayerId(), {
+                    showMessage: true,
+                    broadcast: true
+                });
+            } else {
+                gameOver();
+            }
         }
     }
 }
