@@ -227,7 +227,7 @@ async function saveHighScore(roundReached, score, kills) {
     }
 
     const playtimeSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
-    const accuracy = sessionStats.shots > 0 
+    const accuracy = sessionStats.shots > 0
         ? ((sessionStats.hits / sessionStats.shots) * 100).toFixed(2)
         : 0;
 
@@ -254,7 +254,7 @@ async function saveHighScore(roundReached, score, kills) {
                 kills,
                 mapName: customMapData?.name || 'Default'
             });
-            
+
             // Mostrar mensagem de level up se subiu de nível
             const profile = await loadPlayerProfile();
             if (profile && data.newLevel > profile.level) {
@@ -276,7 +276,7 @@ function attemptIntegrations(retries = 0) {
         // gameOver
         if (typeof gameOver === 'function' && gameOver._integratedWithAPI !== true) {
             const original = gameOver;
-            gameOver = async function() {
+            gameOver = async function () {
                 const playerWon = arguments && arguments.length > 0 ? !!arguments[0] : false;
                 if (checkAuthentication()) {
                     try {
@@ -316,7 +316,7 @@ function attemptIntegrations(retries = 0) {
         // shoot
         if (typeof shoot === 'function' && shoot._integratedWithAPI !== true) {
             const original = shoot;
-            shoot = function() {
+            shoot = function () {
                 const weaponName = (typeof playerConfig !== 'undefined' && playerConfig.currentWeapon) ? playerConfig.currentWeapon : 'pistol';
                 try { trackShot(weaponName); } catch (e) { /* ignore */ }
                 return original.apply(this, arguments);
@@ -327,7 +327,7 @@ function attemptIntegrations(retries = 0) {
         // showDamageNumber
         if (typeof showDamageNumber === 'function' && showDamageNumber._integratedWithAPI !== true) {
             const original = showDamageNumber;
-            showDamageNumber = function(damage, position, isHeadshot) {
+            showDamageNumber = function (damage, position, isHeadshot) {
                 const weaponName = (typeof playerConfig !== 'undefined' && playerConfig.currentWeapon) ? playerConfig.currentWeapon : 'pistol';
                 try { trackHit(weaponName, isHeadshot); } catch (e) { /* ignore */ }
                 return original.apply(this, arguments);
@@ -338,7 +338,7 @@ function attemptIntegrations(retries = 0) {
         // nextRound
         if (typeof nextRound === 'function' && nextRound._integratedWithAPI !== true) {
             const original = nextRound;
-            nextRound = async function() {
+            nextRound = async function () {
                 try {
                     sessionStats.roundsCompleted++;
                     if (sessionStats.roundsCompleted % 5 === 0 && checkAuthentication()) {
@@ -358,7 +358,7 @@ function attemptIntegrations(retries = 0) {
         // checkDeadEnemies
         if (typeof checkDeadEnemies === 'function' && checkDeadEnemies._integratedWithAPI !== true) {
             const original = checkDeadEnemies;
-            checkDeadEnemies = function() {
+            checkDeadEnemies = function () {
                 const enemiesBefore = (typeof enemies !== 'undefined') ? enemies.length : 0;
                 const result = original.apply(this, arguments);
                 try {
@@ -376,12 +376,12 @@ function attemptIntegrations(retries = 0) {
         // setupStartButton: garantir que o clique inicie a sessão da API
         if (typeof setupStartButton === 'function' && setupStartButton._integratedWithAPI !== true) {
             const original = setupStartButton;
-            setupStartButton = function() {
+            setupStartButton = function () {
                 original.apply(this, arguments);
                 const startBtn = document.getElementById('startButton');
                 if (startBtn) {
                     const originalClick = startBtn.onclick;
-                    startBtn.onclick = async function(evt) {
+                    startBtn.onclick = async function (evt) {
                         try { await startGameSession(customMapData?.name || 'Default'); } catch (e) { console.warn('Erro ao iniciar sessão via API:', e); }
                         if (typeof originalClick === 'function') originalClick.call(this, evt);
                     };
@@ -410,7 +410,7 @@ function trackKill(isHeadshot = false) {
 
 function trackShot(weaponName) {
     sessionStats.shots++;
-    
+
     if (!sessionStats.weaponStats[weaponName]) {
         sessionStats.weaponStats[weaponName] = {
             shots: 0,
@@ -424,7 +424,7 @@ function trackShot(weaponName) {
 
 function trackHit(weaponName, isHeadshot = false) {
     sessionStats.hits++;
-    
+
     if (sessionStats.weaponStats[weaponName]) {
         sessionStats.weaponStats[weaponName].hits++;
         if (isHeadshot) {
@@ -693,7 +693,7 @@ async function loadLeaderboard(limit = 10) {
 function displayLeaderboard(leaderboard) {
     // Criar ou atualizar elemento de leaderboard no menu
     let leaderboardDiv = document.getElementById('leaderboardDisplay');
-    
+
     if (!leaderboardDiv) {
         leaderboardDiv = document.createElement('div');
         leaderboardDiv.id = 'leaderboardDisplay';
@@ -714,7 +714,7 @@ function displayLeaderboard(leaderboard) {
 
     let html = '<h2 style="color:#00ff00;text-align:center;margin-bottom:15px;">🏆 TOP 10</h2>';
     html += '<table style="width:100%;color:white;font-size:14px;">';
-    
+
     leaderboard.slice(0, 10).forEach((player, index) => {
         const rankColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#fff';
         html += `
@@ -725,7 +725,7 @@ function displayLeaderboard(leaderboard) {
             </tr>
         `;
     });
-    
+
     html += '</table>';
     leaderboardDiv.innerHTML = html;
 }
@@ -753,23 +753,23 @@ function addLeaderboardButton() {
 
 function calculateScore() {
     let score = 0;
-    
+
     // Pontos por kills
     score += sessionStats.kills * 100;
-    
+
     // Bônus por headshots
     score += sessionStats.headshots * 50;
-    
+
     // Pontos por rounds completados
     score += sessionStats.roundsCompleted * 500;
-    
+
     // Bônus de precisão
     if (sessionStats.shots > 0) {
         const accuracy = (sessionStats.hits / sessionStats.shots) * 100;
         if (accuracy > 50) score += 1000;
         if (accuracy > 75) score += 2000;
     }
-    
+
     return score;
 }
 
@@ -777,24 +777,26 @@ function calculateScore() {
 // INTEGRAÇÃO COM ROUNDS
 // ==========================================
 
-// Modificar a função nextRound existente
-const originalNextRound = nextRound;
-nextRound = async function() {
-    sessionStats.roundsCompleted++;
-    
-    // Salvar progresso a cada 5 rounds
-    if (sessionStats.roundsCompleted % 5 === 0 && checkAuthentication()) {
-        await saveHighScore(currentRound, calculateScore(), sessionStats.kills);
-        await saveWeaponStats();
-        
-        const profile = await loadPlayerProfile();
-        if (profile) {
-            await checkAndUnlockAchievements(profile);
+// Modificar a função nextRound existente (apenas se existir - só existe em game.js)
+if (typeof nextRound === 'function') {
+    const originalNextRound = nextRound;
+    nextRound = async function () {
+        sessionStats.roundsCompleted++;
+
+        // Salvar progresso a cada 5 rounds
+        if (sessionStats.roundsCompleted % 5 === 0 && checkAuthentication()) {
+            await saveHighScore(currentRound, calculateScore(), sessionStats.kills);
+            await saveWeaponStats();
+
+            const profile = await loadPlayerProfile();
+            if (profile) {
+                await checkAndUnlockAchievements(profile);
+            }
         }
-    }
-    
-    originalNextRound();
-};
+
+        originalNextRound();
+    };
+}
 
 // ==========================================
 // INICIALIZAÇÃO
@@ -804,16 +806,16 @@ async function initializeGame() {
     // Verificar autenticação
     if (checkAuthentication()) {
         console.log('✅ Jogador autenticado:', API_CONFIG.player.username);
-        
+
         // Carregar perfil
         await displayPlayerInfo();
-        
+
         // A integração do botão de início com a API será feita de forma segura
         // por `attemptIntegrations()` que tenta integrar quando as funções do jogo existirem.
-        
+
         // Adicionar botão de leaderboard
         addLeaderboardButton();
-        
+
         // Adicionar botão de logout ao menu
         const menuMain = document.getElementById('menuMain');
         if (menuMain) {
@@ -832,13 +834,13 @@ async function initializeGame() {
 // ESTATÍSTICAS EM TEMPO REAL
 // ==========================================
 
-    // Tentar integrar com as funções do jogo (pode ser carregado antes do código do jogo)
-    attemptIntegrations();
+// Tentar integrar com as funções do jogo (pode ser carregado antes do código do jogo)
+attemptIntegrations();
 
 function updateSessionStats() {
     // Atualizar display de estatísticas durante o jogo
     let statsDiv = document.getElementById('sessionStats');
-    
+
     if (!statsDiv) {
         statsDiv = document.createElement('div');
         statsDiv.id = 'sessionStats';
@@ -854,7 +856,7 @@ function updateSessionStats() {
         document.getElementById('hud').appendChild(statsDiv);
     }
 
-    const accuracy = sessionStats.shots > 0 
+    const accuracy = sessionStats.shots > 0
         ? ((sessionStats.hits / sessionStats.shots) * 100).toFixed(1)
         : 0;
 
@@ -879,11 +881,11 @@ setInterval(() => {
 
 // Integrar com checkDeadEnemies
 const originalCheckDeadEnemies = checkDeadEnemies;
-checkDeadEnemies = function() {
+checkDeadEnemies = function () {
     const enemiesBeforeDeath = enemies.length;
     originalCheckDeadEnemies();
     const enemiesAfterDeath = enemies.length;
-    
+
     // Se inimigos morreram, registrar kill
     if (enemiesBeforeDeath > enemiesAfterDeath) {
         const kills = enemiesBeforeDeath - enemiesAfterDeath;
@@ -1003,7 +1005,7 @@ function calculateRank(profile, mode = 'survival') {
     if (mode === 'survival') {
         // Score baseado em Nível, Rounds e Precisão (estimada)
         // Assumindo precisão média de 30% se não tiver dados
-        const accuracy = 30; 
+        const accuracy = 30;
         score = (profile.level * 200) + (profile.highest_round * 100) + (profile.total_kills * 0.5);
     } else {
         // Battle Royale: Vitórias e Kills
@@ -1049,7 +1051,7 @@ async function saveBattleRoyaleStats(won, position, kills) {
             const data = await response.json();
             console.log('Stats BR ranqueadas salvas:', data);
             clientLogs.info('BATTLE_ROYALE', 'Stats ranqueadas enviadas', { won, position, kills, queue: CURRENT_QUEUE_TYPE });
-            
+
             const profile = await loadPlayerProfile();
             if (profile && data.newLevel > profile.level) {
                 safeShowMessage(`LEVEL UP! Agora você é nível ${data.newLevel}!`, 3000);

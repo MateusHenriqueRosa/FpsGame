@@ -2016,7 +2016,15 @@ async function loadMaps() {
 
     try {
         const response = await fetch(`${API_URL}/maps`);
-        const maps = await response.json();
+        const data = await response.json();
+
+        // Verificar se a resposta é um erro ou array válido
+        if (!response.ok || data.error) {
+            container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: orange;">⚠️ ${data.error || 'Erro ao carregar mapas'}</p>`;
+            return;
+        }
+
+        const maps = Array.isArray(data) ? data : [];
 
         container.innerHTML = '';
         if (maps.length === 0) {

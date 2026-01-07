@@ -1095,6 +1095,28 @@ async function ensureExtendedSchema() {
       $$;
     `);
 
+    // Criar tabela de mapas da comunidade se não existir
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS community_maps (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        description TEXT,
+        author_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        map_data JSONB NOT NULL,
+        downloads INTEGER DEFAULT 0,
+        likes INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_community_maps_author ON community_maps(author_id);
+    `);
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_community_maps_created ON community_maps(created_at DESC);
+    `);
+
     await client.query('COMMIT');
     console.log('🗄️  Esquema do banco validado com sucesso.');
     logger.info('DB_SCHEMA', 'Esquema validado com sucesso.');
@@ -2451,6 +2473,11 @@ app.get('/api/maps', async (req, res) => {
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar mapas:', error);
+    // Se a tabela não existe, retornar array vazio com aviso
+    if (error.code === '42P01') {
+      console.log('Tabela community_maps não existe. Execute init.sql para criar.');
+      return res.json([]); // Retorna array vazio para não quebrar o frontend
+    }
     logger.error('MAPS', 'Erro ao listar mapas', buildLogMeta(req, { error: error.message }));
     res.status(500).json({ error: 'Erro ao listar mapas' });
   }
