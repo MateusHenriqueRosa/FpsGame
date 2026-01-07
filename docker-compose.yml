@@ -52,15 +52,13 @@ services:
   # Servidor Frontend Nginx
   frontend:
     build:
-      context: ./nginx
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: nginx/Dockerfile
     container_name: fps_frontend
     restart: always
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       - backend
     networks:
