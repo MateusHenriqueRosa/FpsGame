@@ -5,6 +5,7 @@ let keys = {}, currentRound = 1, enemiesRemaining = 0;
 let gameStarted = false, pointerLocked = false, mapLoaded = false;
 let customMapData = null;
 let mapEnemySpawns = []; // Spawns de inimigos do mapa customizado
+let customX1Settings = null; // Configurações X1 do mapa customizado (spawns, config)
 let maxRounds = 50; // Máximo de rounds (configurável pelo mapa)
 let baseEnemiesPerRound = 5; // Base de inimigos por round
 let enemyIncrement = 2; // Incremento de inimigos por round
@@ -961,6 +962,25 @@ function prepareX1Loadout() {
 
 function applyX1SpawnPreset() {
     if (!IS_X1_MODE) return;
+
+    // Verificar se há spawns customizados do mapa
+    if (customX1Settings?.spawns) {
+        const isClient = INITIAL_COOP_ROLE === 'client';
+        const spawnData = isClient ? customX1Settings.spawns.player2 : customX1Settings.spawns.player1;
+
+        if (spawnData?.position) {
+            playerConfig.position.set(
+                spawnData.position.x,
+                spawnData.position.y + 1, // Pequeno offset para não cair no chão
+                spawnData.position.z
+            );
+            playerConfig.velocity.set(0, 0, 0);
+            console.log(`⚔️ Spawn X1 customizado aplicado (${isClient ? 'P2' : 'P1'}):`, spawnData.position);
+            return;
+        }
+    }
+
+    // Fallback para spawns padrão
     const offset = INITIAL_COOP_ROLE === 'client' ? 14 : -14;
     playerConfig.position.set(offset, 5, 0);
     playerConfig.velocity.set(0, 0, 0);
@@ -1523,7 +1543,17 @@ async function createMap() {
         }
 
         console.log(`✅ Mapa carregado: ${customMapData.objects.length} objetos, ${maxRounds} rounds, ${mapEnemySpawns.length} spawns`);
+
+        // Se é modo X1 e tem configurações X1 no mapa, carregá-las
+        if (IS_X1_MODE) {
+            const x1Data = customMapData.modeSettings?.x1 || customMapData.x1;
+            if (x1Data) {
+                customX1Settings = x1Data;
+                console.log('⚔️ Configurações X1 carregadas do mapa customizado:', customX1Settings);
+            }
+        }
     } else if (IS_X1_MODE) {
+        customX1Settings = null; // Reset para arena padrão
         createX1Arena();
     } else {
         createDefaultMap();
@@ -2308,20 +2338,20 @@ function updateEnemies(delta) {
     }
     const now = Date.now();
     const targets = buildCoopThreatTargets();
-    
+
     // Garantir que o mapa esteja carregado antes de mover inimigos
     if (!mapLoaded || collidableObjects.length === 0) return;
-    
+
     enemies.forEach(enemy => {
         const d = enemy.userData;
-        
+
         // Aplicar gravidade
         if (!d.onGround) {
             d.velocity.y -= playerConfig.gravity * delta;
             // Limitar velocidade de queda para evitar atravessar o chão
             d.velocity.y = Math.max(d.velocity.y, -50);
         }
-        
+
         const preferredTarget = pickClosestTarget(enemy.position, targets) || {
             playerId: getLocalPlayerId(),
             position: playerConfig.position.clone(),
@@ -2341,28 +2371,28 @@ function updateEnemies(delta) {
         }
         d.velocity.x = moveDir.x * d.speed;
         d.velocity.z = moveDir.z * d.speed;
-        
+
         // Sub-stepping para evitar atravessar o chão (tunneling)
         const displacement = d.velocity.clone().multiplyScalar(delta);
         const steps = Math.max(1, Math.ceil(displacement.length() / 0.5));
         const stepDisplacement = displacement.clone().divideScalar(steps);
-        
+
         for (let step = 0; step < steps; step++) {
             enemy.position.add(stepDisplacement);
             d.onGround = false;
-            
+
             const enemyBox = new THREE.Box3().setFromCenterAndSize(
                 enemy.position.clone().add(new THREE.Vector3(0, 1, 0)),
                 new THREE.Vector3(1, 2, 1)
             );
-            
+
             collidableObjects.forEach(box => {
                 if (enemyBox.intersectsBox(box)) {
                     const intersection = enemyBox.clone().intersect(box);
                     const pen = new THREE.Vector3();
                     intersection.getSize(pen);
                     const center = box.getCenter(new THREE.Vector3());
-                    
+
                     if (pen.x < pen.y && pen.x < pen.z) {
                         enemy.position.x += pen.x * Math.sign(enemy.position.x - center.x);
                         d.velocity.x = 0;
@@ -2382,7 +2412,7 @@ function updateEnemies(delta) {
                 }
             });
         }
-        
+
         // Floor clamping de segurança: garantir que inimigos nunca fiquem abaixo de Y=0
         if (enemy.position.y < 0) {
             enemy.position.y = 0.1;
@@ -2843,7 +2873,7 @@ function syncRemoteEnemiesFromSnapshot(list = []) {
 function syncRemoteLootFromSnapshot(list = []) {
     if (coopRuntime.intent?.role !== 'client') return;
     if (!Array.isArray(list)) return;
-    
+
     const hostLootIds = new Set(list.map(l => l.id));
 
     // Remover loots que não existem mais no host (foram coletados)

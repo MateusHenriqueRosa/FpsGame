@@ -16,6 +16,7 @@
 
             <div class="mode-switch">
                 <button id="modeSurvival" class="active" onclick="setEditorMode('survival')">Horda / Survival</button>
+                <button id="modeX1" onclick="setEditorMode('x1')">⚔️ Duelo X1</button>
                 <button id="modeTactical" onclick="setEditorMode('tactical')">Tático 5v5</button>
                 <button id="modeBattle" onclick="setEditorMode('battle')">Battle Royale</button>
             </div>
@@ -70,47 +71,47 @@
                         </select>
                     </div>
 
-                <div class="control-group">
-                    <label>Largura (X):</label>
-                    <input type="number" id="width" value="10" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Altura (Y):</label>
-                    <input type="number" id="height" value="2" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Profundidade (Z):</label>
-                    <input type="number" id="depth" value="10" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Posição X:</label>
-                    <input type="number" id="posX" value="0" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Posição Y:</label>
-                    <input type="number" id="posY" value="1" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Posição Z:</label>
-                    <input type="number" id="posZ" value="0" step="0.5">
-                </div>
-
-                <div class="control-group">
-                    <label>Cor:</label>
-                    <div class="color-picker">
-                        <div class="color-option selected" style="background: #8b7355;" data-color="0x8b7355"></div>
-                        <div class="color-option" style="background: #666666;" data-color="0x666666"></div>
-                        <div class="color-option" style="background: #8b4513;" data-color="0x8b4513"></div>
-                        <div class="color-option" style="background: #2d5016;" data-color="0x2d5016"></div>
-                        <div class="color-option" style="background: #ff0000;" data-color="0xff0000"></div>
-                        <div class="color-option" style="background: #0000ff;" data-color="0x0000ff"></div>
+                    <div class="control-group">
+                        <label>Largura (X):</label>
+                        <input type="number" id="width" value="10" step="0.5">
                     </div>
-                </div>
+
+                    <div class="control-group">
+                        <label>Altura (Y):</label>
+                        <input type="number" id="height" value="2" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Profundidade (Z):</label>
+                        <input type="number" id="depth" value="10" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Posição X:</label>
+                        <input type="number" id="posX" value="0" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Posição Y:</label>
+                        <input type="number" id="posY" value="1" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Posição Z:</label>
+                        <input type="number" id="posZ" value="0" step="0.5">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Cor:</label>
+                        <div class="color-picker">
+                            <div class="color-option selected" style="background: #8b7355;" data-color="0x8b7355"></div>
+                            <div class="color-option" style="background: #666666;" data-color="0x666666"></div>
+                            <div class="color-option" style="background: #8b4513;" data-color="0x8b4513"></div>
+                            <div class="color-option" style="background: #2d5016;" data-color="0x2d5016"></div>
+                            <div class="color-option" style="background: #ff0000;" data-color="0xff0000"></div>
+                            <div class="color-option" style="background: #0000ff;" data-color="0x0000ff"></div>
+                        </div>
+                    </div>
 
                     <button id="addObject">➕ ADICIONAR OBJETO</button>
                 </div>
@@ -120,20 +121,27 @@
                     <div class="control-group">
                         <label>Textura:</label>
                         <button id="addTextureBtn">🖼️ Adicionar Textura</button>
-                        <button id="removeTextureBtn" class="secondary" style="display: none;">❌ Remover Textura</button>
+                        <button id="removeTextureBtn" class="secondary" style="display: none;">❌ Remover
+                            Textura</button>
                         <input type="file" id="textureInput" accept="image/*">
-                        <div id="texturePreview" style="width:100%; height: 100px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-top: 10px; border: 1px solid #555;"></div>
+                        <div id="texturePreview"
+                            style="width:100%; height: 100px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-top: 10px; border: 1px solid #555;">
+                        </div>
                     </div>
                     <div class="control-group">
                         <label>Rotação Y (graus):</label>
-                        <input type="number" id="rotationY" value="0" step="15" min="0" max="360" onchange="rotateSelectedObject()">
+                        <input type="number" id="rotationY" value="0" step="15" min="0" max="360"
+                            onchange="rotateSelectedObject()">
                     </div>
                     <div class="control-group">
                         <label>Posição no Mapa:</label>
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                            <input type="number" id="selectedPosX" placeholder="X" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
-                            <input type="number" id="selectedPosY" placeholder="Y" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
-                            <input type="number" id="selectedPosZ" placeholder="Z" step="0.1" style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                            <input type="number" id="selectedPosX" placeholder="X" step="0.1"
+                                style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                            <input type="number" id="selectedPosY" placeholder="Y" step="0.1"
+                                style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
+                            <input type="number" id="selectedPosZ" placeholder="Z" step="0.1"
+                                style="flex:1; min-width:90px;" onchange="updateSelectedObjectPosition()">
                         </div>
                     </div>
                 </div>
@@ -148,8 +156,9 @@
             <div id="tabEnemies" class="editor-tab" style="display: none;">
                 <div id="survivalEnemyTools" class="section enemy-spawn-mode">
                     <h3 style="color: #ff0000; font-size: 16px; margin-bottom: 10px;">👾 Spawns de Inimigos</h3>
-                    <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Clique no mapa para adicionar pontos de spawn</p>
-                    
+                    <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Clique no mapa para adicionar pontos
+                        de spawn</p>
+
                     <div class="control-group">
                         <label>Tipo de Inimigo:</label>
                         <select id="enemyType">
@@ -164,16 +173,59 @@
                     </div>
 
                     <button onclick="addEnemySpawn()">➕ ADICIONAR SPAWN (Clique no Mapa)</button>
-                    
-                    <div id="enemySpawnsList" style="max-height: 300px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
 
-                    <button onclick="clearEnemySpawns()" class="danger" style="margin-top: 10px;">🗑️ LIMPAR SPAWNS</button>
+                    <div id="enemySpawnsList"
+                        style="max-height: 300px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;">
+                    </div>
+
+                    <button onclick="clearEnemySpawns()" class="danger" style="margin-top: 10px;">🗑️ LIMPAR
+                        SPAWNS</button>
+                </div>
+
+                <!-- X1 TOOLS -->
+                <div id="x1Tools" style="display:none;">
+                    <div class="section">
+                        <h3 style="color:#ff9d00;font-size:16px;margin-bottom:10px;">⚔️ Spawns de Duelo X1</h3>
+                        <p style="font-size:13px;color:#aaa;margin-bottom:12px;">Defina os pontos de spawn para os 2
+                            jogadores do duelo.</p>
+
+                        <div class="objective-status">
+                            <div>
+                                <strong style="color:#00ff00;">🟢 Jogador 1 (Host)</strong>
+                                <span id="x1Spawn1Info">Não definido</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button onclick="startX1SpawnPlacement(1)">Definir</button>
+                                <button class="secondary" onclick="removeX1Spawn(1)">Limpar</button>
+                            </div>
+                        </div>
+
+                        <div class="objective-status">
+                            <div>
+                                <strong style="color:#00c6ff;">🔵 Jogador 2 (Cliente)</strong>
+                                <span id="x1Spawn2Info">Não definido</span>
+                            </div>
+                            <div style="display:flex;gap:6px;">
+                                <button onclick="startX1SpawnPlacement(2)">Definir</button>
+                                <button class="secondary" onclick="removeX1Spawn(2)">Limpar</button>
+                            </div>
+                        </div>
+
+                        <div
+                            style="margin-top: 15px; padding: 10px; background: #1a1a1a; border: 1px solid #ff9d00; border-radius: 6px;">
+                            <p style="font-size: 12px; color: #ff9d00; margin: 0;">
+                                💡 <strong>Dica:</strong> Posicione os spawns em lados opostos da arena para um duelo
+                                justo!
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="tacticalTools" style="display:none;">
                     <div class="section">
                         <h3 style="color:#00c6ff;font-size:16px;margin-bottom:10px;">🎯 Objetivos (Bombsites)</h3>
-                        <p style="font-size:13px;color:#aaa;margin-bottom:12px;">Selecione um objetivo e clique no mapa para posicionar. Use novamente para reposicionar.</p>
+                        <p style="font-size:13px;color:#aaa;margin-bottom:12px;">Selecione um objetivo e clique no mapa
+                            para posicionar. Use novamente para reposicionar.</p>
                         <div class="objective-status">
                             <div>
                                 <strong>Site A</strong>
@@ -198,47 +250,64 @@
 
                     <div class="section">
                         <h3 style="color:#00ff9d;font-size:16px;margin-bottom:10px;">👥 Spawns das Equipes</h3>
-                        <p style="font-size:13px;color:#aaa;">Clique em "Adicionar" e depois no mapa para criar pontos.</p>
+                        <p style="font-size:13px;color:#aaa;">Clique em "Adicionar" e depois no mapa para criar pontos.
+                        </p>
                         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
                             <button onclick="startTeamSpawnPlacement('allies')">➕ Spawn Aliado</button>
-                            <button class="secondary" onclick="startTeamSpawnPlacement('enemies')">➕ Spawn Inimigo</button>
+                            <button class="secondary" onclick="startTeamSpawnPlacement('enemies')">➕ Spawn
+                                Inimigo</button>
                             <button class="danger" onclick="clearTeamSpawns('allies')">Limpar Aliados</button>
                             <button class="danger" onclick="clearTeamSpawns('enemies')">Limpar Inimigos</button>
                         </div>
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
                             <div>
                                 <h4 style="margin-bottom:8px;color:#7dffcf;">Vanguarda (Aliados)</h4>
-                                <div id="allySpawnList" style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;"></div>
+                                <div id="allySpawnList"
+                                    style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;">
+                                </div>
                             </div>
                             <div>
                                 <h4 style="margin-bottom:8px;color:#ff8a8a;">Legion (Inimigos)</h4>
-                                <div id="enemyTeamSpawnList" style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;"></div>
+                                <div id="enemyTeamSpawnList"
+                                    style="max-height:200px;overflow-y:auto;border:1px solid #555;border-radius:6px;padding:8px;background:#101010;">
+                                </div>
                             </div>
                         </div>
 
                         <div id="battleTools" style="display:none;">
                             <div class="section enemy-spawn-mode">
                                 <h3 style="color:#7dffcf;font-size:16px;margin-bottom:10px;">💼 Zonas de Loot</h3>
-                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Defina regiões com loot garantido. Escolha o raio e clique no mapa.</p>
+                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Defina regiões com loot
+                                    garantido. Escolha o raio e clique no mapa.</p>
                                 <div class="control-group">
                                     <label>Raio da Zona (m):</label>
                                     <input type="number" id="lootZoneRadius" value="12" min="4" max="60" step="1">
                                 </div>
-                                <button onclick="startBattlePlacement('loot')">➕ ADICIONAR ZONA (CLIQUE NO MAPA)</button>
-                                <div id="battleLootList" style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
-                                <button class="danger" style="margin-top:10px;" onclick="clearBattleLootZones()">🗑️ LIMPAR ZONAS</button>
+                                <button onclick="startBattlePlacement('loot')">➕ ADICIONAR ZONA (CLIQUE NO
+                                    MAPA)</button>
+                                <div id="battleLootList"
+                                    style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;">
+                                </div>
+                                <button class="danger" style="margin-top:10px;" onclick="clearBattleLootZones()">🗑️
+                                    LIMPAR ZONAS</button>
                             </div>
 
                             <div class="section enemy-spawn-mode">
-                                <h3 style="color:#ffd54f;font-size:16px;margin-bottom:10px;">📦 Drops Aéreos / Respawns</h3>
-                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Marque pontos para pacotes de suprimento ou respawns especiais.</p>
+                                <h3 style="color:#ffd54f;font-size:16px;margin-bottom:10px;">📦 Drops Aéreos / Respawns
+                                </h3>
+                                <p style="font-size:13px;color:#aaa;margin-bottom:10px;">Marque pontos para pacotes de
+                                    suprimento ou respawns especiais.</p>
                                 <div class="control-group">
                                     <label>Altura do Drop (m):</label>
                                     <input type="number" id="dropAltitude" value="60" min="15" max="150" step="5">
                                 </div>
-                                <button onclick="startBattlePlacement('drop')">➕ ADICIONAR DROP (CLIQUE NO MAPA)</button>
-                                <div id="battleDropList" style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;"></div>
-                                <button class="danger" style="margin-top:10px;" onclick="clearBattleDropSpawns()">🗑️ LIMPAR DROPS</button>
+                                <button onclick="startBattlePlacement('drop')">➕ ADICIONAR DROP (CLIQUE NO
+                                    MAPA)</button>
+                                <div id="battleDropList"
+                                    style="max-height: 240px; overflow-y: auto; margin-top: 15px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; padding: 10px;">
+                                </div>
+                                <button class="danger" style="margin-top:10px;" onclick="clearBattleDropSpawns()">🗑️
+                                    LIMPAR DROPS</button>
                             </div>
                         </div>
                     </div>
@@ -248,7 +317,7 @@
             <div id="tabConfig" class="editor-tab" style="display: none;">
                 <div id="roundConfig" class="section">
                     <h3 style="color: #ffff00; font-size: 16px; margin-bottom: 10px;">🎯 Configuração de Rounds</h3>
-                    
+
                     <div class="control-group">
                         <label>Quantidade Total de Rounds:</label>
                         <input type="number" id="totalRounds" value="10" min="1" max="100">
@@ -275,9 +344,49 @@
                     </div>
                 </div>
 
+                <!-- X1 CONFIG -->
+                <div id="x1Config" class="section" style="display:none;">
+                    <h3 style="color: #ff9d00; font-size: 16px; margin-bottom: 10px;">⚔️ Configuração do Duelo X1</h3>
+
+                    <div class="control-group">
+                        <label>Vida Inicial:</label>
+                        <input type="number" id="x1Health" value="120" min="50" max="300" step="10">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Tempo de Respawn (segundos):</label>
+                        <input type="number" id="x1RespawnTime" value="5" min="1" max="15">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Tamanho da Arena:</label>
+                        <select id="x1ArenaSize">
+                            <option value="small">Pequena (50x50)</option>
+                            <option value="medium" selected>Média (70x70)</option>
+                            <option value="large">Grande (100x100)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Armas Permitidas:</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px;">
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponPistol" checked>
+                                Pistola</label>
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponSmg" checked> SMG</label>
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponRifle" checked>
+                                Rifle</label>
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponSniper" checked>
+                                Sniper</label>
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponShotgun" checked>
+                                Shotgun</label>
+                            <label style="font-size: 12px;"><input type="checkbox" id="x1WeaponBazooka"> Bazuca</label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="section">
                     <h3 style="color: #00ff00; font-size: 16px; margin-bottom: 10px;">🎵 Trilha Sonora</h3>
-                    
+
                     <div class="control-group">
                         <label>Música de Fundo:</label>
                         <button onclick="document.getElementById('musicFileInput').click()">🎵 Carregar Música</button>
@@ -287,7 +396,8 @@
 
                     <div class="control-group">
                         <label>Volume: <span id="volumeValue">50%</span></label>
-                        <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="updateVolume(this.value)">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50"
+                            oninput="updateVolume(this.value)">
                     </div>
 
                     <button id="toggleMusic" onclick="toggleMusic()">▶️ REPRODUZIR</button>
@@ -404,6 +514,8 @@
 
                 <button id="exportMap">💾 EXPORTAR MAPA COMPLETO</button>
                 <button id="importMap" class="secondary">📂 IMPORTAR MAPA</button>
+                <button id="testMap" style="margin-top:10px; background: linear-gradient(135deg, #00ff88, #00cc6a);">🎮
+                    TESTAR MAPA</button>
                 <button id="saveToLauncher" class="secondary" style="margin-top:10px;">📁 SALVAR PARA 5V5</button>
                 <input type="file" id="fileInput" accept=".json">
             </div>
@@ -421,7 +533,7 @@
                 <p>🔄 R: Rotacionar 45°</p>
                 <p>🗑️ Delete: Remover</p>
             </div>
-            
+
             <audio id="backgroundMusic" loop></audio>
         </div>
     </div>
