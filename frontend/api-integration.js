@@ -781,31 +781,6 @@ function calculateScore() {
 }
 
 // ==========================================
-// INTEGRAÇÃO COM ROUNDS
-// ==========================================
-
-// Modificar a função nextRound existente (apenas se existir - só existe em game.js)
-if (typeof nextRound === 'function') {
-    const originalNextRound = nextRound;
-    nextRound = async function () {
-        sessionStats.roundsCompleted++;
-
-        // Salvar progresso a cada 5 rounds
-        if (sessionStats.roundsCompleted % 5 === 0 && checkAuthentication()) {
-            await saveHighScore(currentRound, calculateScore(), sessionStats.kills);
-            await saveWeaponStats();
-
-            const profile = await loadPlayerProfile();
-            if (profile) {
-                await checkAndUnlockAchievements(profile);
-            }
-        }
-
-        originalNextRound();
-    };
-}
-
-// ==========================================
 // INICIALIZAÇÃO
 // ==========================================
 
