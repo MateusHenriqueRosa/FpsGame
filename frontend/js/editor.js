@@ -229,12 +229,14 @@ function init() {
 }
 
 function setEditorMode(mode) {
+    console.log('setEditorMode chamado com:', mode);
     const normalized = mode === 'tactical'
         ? 'tactical'
         : mode === 'x1'
             ? 'x1'
             : ((mode === 'battle' || mode === 'battleRoyale') ? 'battleRoyale' : 'survival');
     editorMode = normalized;
+    console.log('Modo normalizado:', normalized);
 
     const modeButtons = {
         survival: document.getElementById('modeSurvival'),
@@ -250,6 +252,7 @@ function setEditorMode(mode) {
     const x1Tools = document.getElementById('x1Tools');
     const tacticalTools = document.getElementById('tacticalTools');
     const battleTools = document.getElementById('battleTools');
+    console.log('x1Tools element:', x1Tools);
     if (survivalTools) survivalTools.style.display = normalized === 'survival' ? 'block' : 'none';
     if (x1Tools) x1Tools.style.display = normalized === 'x1' ? 'block' : 'none';
     if (tacticalTools) tacticalTools.style.display = normalized === 'tactical' ? 'block' : 'none';
@@ -259,6 +262,7 @@ function setEditorMode(mode) {
     const x1Config = document.getElementById('x1Config');
     const tacConfig = document.getElementById('tacticalRoundConfig');
     const battleConfig = document.getElementById('battleConfigSection');
+    console.log('x1Config element:', x1Config);
     if (survivalConfig) survivalConfig.style.display = normalized === 'survival' ? 'block' : 'none';
     if (x1Config) x1Config.style.display = normalized === 'x1' ? 'block' : 'none';
     if (tacConfig) tacConfig.style.display = normalized === 'tactical' ? 'block' : 'none';
@@ -275,6 +279,7 @@ function setEditorMode(mode) {
     // Para X1 e Tactical, mostrar a aba de Inimigos (spawns)
     // Para Survival e Battle Royale, manter na aba de Objetos
     if (normalized === 'x1' || normalized === 'tactical') {
+        console.log('Trocando para aba enemies');
         switchEditorTab('enemies');
     }
 
@@ -288,6 +293,7 @@ function setEditorMode(mode) {
         battleRoyale: 'Battle Royale'
     };
     showMessage(`Modo alterado para: ${modeNames[normalized]}`, 1500);
+    console.log('setEditorMode concluído');
 }
 
 function switchEditorTab(tab) {
