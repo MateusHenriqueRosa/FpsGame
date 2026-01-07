@@ -10,6 +10,13 @@ const API_CONFIG = {
     player: JSON.parse(localStorage.getItem('player') || 'null')
 };
 
+// Função para atualizar API_CONFIG após login/registro
+function refreshApiConfig() {
+    API_CONFIG.token = localStorage.getItem('token');
+    API_CONFIG.player = JSON.parse(localStorage.getItem('player') || 'null');
+    console.log('API_CONFIG atualizado:', { token: !!API_CONFIG.token, player: API_CONFIG.player?.username });
+}
+
 const CLIENT_LOG_ENDPOINT = `${API_CONFIG.baseUrl}/logs/client`;
 
 function normalizeLogMeta(meta) {

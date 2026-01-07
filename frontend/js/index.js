@@ -367,6 +367,12 @@ async function saveDisplayName() {
 }
 
 async function saveSkin() {
+    // Verificar autenticação antes de tentar salvar
+    if (!currentUser || !localStorage.getItem('token')) {
+        alert('Você precisa estar logado para salvar o visual. Faça login primeiro.');
+        return;
+    }
+
     const bodyColor = document.getElementById('editBodyColor').value;
     const headColor = document.getElementById('editHeadColor').value;
 
@@ -387,7 +393,7 @@ async function saveSkin() {
         }
         alert('Skin salva!');
     } else {
-        alert('Não foi possível salvar o visual. Verifique o tamanho da textura e tente novamente.');
+        alert('Não foi possível salvar o visual. Tente fazer logout e login novamente.');
     }
 }
 
@@ -1272,6 +1278,8 @@ async function handleLogin(event) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('player', JSON.stringify(data.player));
             currentUser = data.player;
+            // Atualizar API_CONFIG para que as funções de api-integration.js funcionem
+            if (typeof refreshApiConfig === 'function') refreshApiConfig();
             showMessage('Login realizado com sucesso!', 'success');
             renderTopBarActions(currentUser);
             personalizeHeroSection(currentUser);
@@ -1328,6 +1336,8 @@ async function handleRegister(event) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('player', JSON.stringify(data.player));
             currentUser = data.player;
+            // Atualizar API_CONFIG para que as funções de api-integration.js funcionem
+            if (typeof refreshApiConfig === 'function') refreshApiConfig();
             showMessage('Conta criada com sucesso!', 'success');
             renderTopBarActions(currentUser);
             personalizeHeroSection(currentUser);
