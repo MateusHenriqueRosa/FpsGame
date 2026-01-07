@@ -16,6 +16,15 @@ const UNLOCK_INTERVAL = 2;
 const SUPER_SHOTGUN_EXPLOSION_DAMAGE = 60;
 const X1_DEFAULT_HEALTH = 120;
 const X1_RESPAWN_DELAY_MS = 5000;
+
+// Helper para obter tempo de respawn X1 (customizado ou padrão)
+function getX1RespawnDelay() {
+    if (customX1Settings?.config?.respawnTime) {
+        return customX1Settings.config.respawnTime * 1000; // Converter segundos para ms
+    }
+    return X1_RESPAWN_DELAY_MS;
+}
+
 const x1MatchState = {
     active: false,
     started: false,
@@ -948,16 +957,52 @@ function ensureX1PlayerState(playerId) {
 
 function prepareX1Loadout() {
     if (!IS_X1_MODE) return;
-    Object.values(playerConfig.weapons).forEach(weapon => {
-        weapon.unlocked = true;
-        weapon.maxAmmo = Number.POSITIVE_INFINITY;
-        weapon.ammo = weapon.clipSize;
+
+    // Verificar armas permitidas no mapa customizado
+    const allowedWeapons = customX1Settings?.config?.weapons || null;
+
+    Object.entries(playerConfig.weapons).forEach(([weaponKey, weapon]) => {
+        // Se há configuração de armas, verificar se está permitida
+        if (allowedWeapons) {
+            weapon.unlocked = allowedWeapons[weaponKey] === true;
+        } else {
+            // Sem configuração, liberar todas
+            weapon.unlocked = true;
+        }
+
+        if (weapon.unlocked) {
+            weapon.maxAmmo = Number.POSITIVE_INFINITY;
+            weapon.ammo = weapon.clipSize;
+        }
     });
-    playerConfig.currentWeapon = 'rifle';
-    playerConfig.maxHealth = X1_DEFAULT_HEALTH;
-    playerConfig.health = X1_DEFAULT_HEALTH;
+
+    // Selecionar primeira arma disponível (preferência: rifle > smg > pistol)
+    if (playerConfig.weapons.rifle.unlocked) {
+        playerConfig.currentWeapon = 'rifle';
+    } else if (playerConfig.weapons.smg.unlocked) {
+        playerConfig.currentWeapon = 'smg';
+    } else if (playerConfig.weapons.pistol.unlocked) {
+        playerConfig.currentWeapon = 'pistol';
+    } else {
+        // Encontrar qualquer arma desbloqueada
+        const firstUnlocked = Object.entries(playerConfig.weapons).find(([_, w]) => w.unlocked);
+        playerConfig.currentWeapon = firstUnlocked ? firstUnlocked[0] : 'pistol';
+        // Garantir que pelo menos pistola esteja disponível
+        playerConfig.weapons.pistol.unlocked = true;
+    }
+
+    // Aplicar vida customizada se configurada
+    const customHealth = customX1Settings?.config?.health || X1_DEFAULT_HEALTH;
+    playerConfig.maxHealth = customHealth;
+    playerConfig.health = customHealth;
     ensureX1PlayerState(getLocalPlayerId()).maxHealth = playerConfig.maxHealth;
     ensureX1PlayerState(getLocalPlayerId()).health = playerConfig.health;
+
+    console.log('⚔️ X1 Loadout preparado:', {
+        armasPermitidas: allowedWeapons,
+        armaAtual: playerConfig.currentWeapon,
+        vida: playerConfig.health
+    });
 }
 
 function applyX1SpawnPreset() {
@@ -968,14 +1013,16 @@ function applyX1SpawnPreset() {
         const isClient = INITIAL_COOP_ROLE === 'client';
         const spawnData = isClient ? customX1Settings.spawns.player2 : customX1Settings.spawns.player1;
 
-        if (spawnData?.position) {
+        // Spawns podem vir como {x,y,z} diretamente ou como {position: {x,y,z}}
+        const pos = spawnData?.position || spawnData;
+        if (pos && typeof pos.x === 'number' && typeof pos.z === 'number') {
             playerConfig.position.set(
-                spawnData.position.x,
-                spawnData.position.y + 1, // Pequeno offset para não cair no chão
-                spawnData.position.z
+                pos.x,
+                (pos.y || 1) + 1, // Pequeno offset para não cair no chão
+                pos.z
             );
             playerConfig.velocity.set(0, 0, 0);
-            console.log(`⚔️ Spawn X1 customizado aplicado (${isClient ? 'P2' : 'P1'}):`, spawnData.position);
+            console.log(`⚔️ Spawn X1 customizado aplicado (${isClient ? 'P2' : 'P1'}):`, pos);
             return;
         }
     }
@@ -1024,12 +1071,13 @@ function clearX1RespawnCountdown() {
     x1MatchState.pendingRespawnFor = null;
 }
 
-function scheduleX1Respawn(message, delayMs = X1_RESPAWN_DELAY_MS, targetId = getLocalPlayerId(), options = {}) {
+function scheduleX1Respawn(message, delayMs = null, targetId = getLocalPlayerId(), options = {}) {
     const targetPlayerId = targetId || getLocalPlayerId();
     const entry = ensureX1PlayerState(targetPlayerId);
     if (!entry) return;
     const isLocalTarget = targetPlayerId === getLocalPlayerId();
-    const clampedDelay = Math.max(1000, delayMs || X1_RESPAWN_DELAY_MS);
+    const effectiveDelay = delayMs ?? getX1RespawnDelay();
+    const clampedDelay = Math.max(1000, effectiveDelay);
     const shouldShowCountdown = isLocalTarget && options.showMessage !== false;
     const shouldBroadcast = options.broadcast !== false && coopRuntime.intent?.role === 'host';
     entry.isGhost = true;
@@ -1220,7 +1268,7 @@ function finishX1Match(winnerId, loserId = null) {
         const respawnMessage = resolvedLoser === getLocalPlayerId()
             ? '💀 Você foi derrotado no duelo.'
             : 'Seu oponente foi derrotado no duelo.';
-        scheduleX1Respawn(respawnMessage, X1_RESPAWN_DELAY_MS, resolvedLoser, {
+        scheduleX1Respawn(respawnMessage, getX1RespawnDelay(), resolvedLoser, {
             winnerId: resolvedWinner,
             resetWinnerOnRespawn: true,
             showMessage: resolvedLoser === getLocalPlayerId()
@@ -1272,7 +1320,7 @@ function handleX1RespawnEvent(data = {}) {
     if (coopRuntime.intent?.role === 'host') return;
     const phase = data.phase || 'scheduled';
     if (phase === 'scheduled') {
-        const delayMs = data.delayMs || X1_RESPAWN_DELAY_MS;
+        const delayMs = data.delayMs || getX1RespawnDelay();
         scheduleX1Respawn(data.message, delayMs, data.playerId, {
             broadcast: false,
             showMessage: data.playerId === getLocalPlayerId(),
@@ -2295,7 +2343,7 @@ function applyEnemyDamageToTarget(target, damage, meta = {}) {
         if (playerConfig.health <= 0) {
             // No modo X1, usar sistema de respawn com cooldown
             if (IS_X1_MODE) {
-                scheduleX1Respawn('Você foi derrotado!', X1_RESPAWN_DELAY_MS, getLocalPlayerId(), {
+                scheduleX1Respawn('Você foi derrotado!', getX1RespawnDelay(), getLocalPlayerId(), {
                     showMessage: true,
                     broadcast: true
                 });
@@ -4487,7 +4535,7 @@ function handleRemotePlayerDamageEvent(data = {}) {
         if (playerConfig.health <= 0) {
             // No modo X1, usar sistema de respawn com cooldown de 5 segundos
             if (IS_X1_MODE) {
-                scheduleX1Respawn('Você foi derrotado!', X1_RESPAWN_DELAY_MS, getLocalPlayerId(), {
+                scheduleX1Respawn('Você foi derrotado!', getX1RespawnDelay(), getLocalPlayerId(), {
                     showMessage: true,
                     broadcast: true
                 });
