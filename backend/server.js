@@ -851,6 +851,98 @@ function setupCoopRealtimeServer() {
 const coopWsServer = setupCoopRealtimeServer();
 
 
+async function ensureBaseSchema() {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // Criar tabela players se não existir
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS players (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP,
+        is_active BOOLEAN DEFAULT TRUE
+      );
+    `);
+
+    // Criar tabela player_profiles se não existir
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS player_profiles (
+        id SERIAL PRIMARY KEY,
+        player_id INTEGER UNIQUE NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        display_name VARCHAR(50),
+        level INTEGER DEFAULT 1,
+        experience INTEGER DEFAULT 0,
+        total_kills INTEGER DEFAULT 0,
+        total_deaths INTEGER DEFAULT 0,
+        total_rounds_completed INTEGER DEFAULT 0,
+        highest_round INTEGER DEFAULT 0,
+        total_playtime_seconds INTEGER DEFAULT 0,
+        avatar_url VARCHAR(255),
+        br_wins INTEGER DEFAULT 0,
+        br_games_played INTEGER DEFAULT 0,
+        br_total_kills INTEGER DEFAULT 0,
+        br_best_position INTEGER DEFAULT 0,
+        tactical_wins INTEGER DEFAULT 0,
+        tactical_games_played INTEGER DEFAULT 0,
+        tactical_total_kills INTEGER DEFAULT 0,
+        tactical_best_rank INTEGER DEFAULT 0,
+        skin_body VARCHAR(50) DEFAULT '#ff0000',
+        skin_head VARCHAR(50) DEFAULT '#ff0000',
+        skin_texture TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Criar tabela high_scores se não existir
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS high_scores (
+        id SERIAL PRIMARY KEY,
+        player_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        score INTEGER NOT NULL,
+        round_reached INTEGER NOT NULL,
+        kills INTEGER DEFAULT 0,
+        accuracy DECIMAL(5,2) DEFAULT 0.00,
+        playtime_seconds INTEGER DEFAULT 0,
+        map_name VARCHAR(100) DEFAULT 'Default',
+        game_mode VARCHAR(20) DEFAULT 'survival',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Criar tabela weapon_stats se não existir
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS weapon_stats (
+        id SERIAL PRIMARY KEY,
+        player_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        weapon_name VARCHAR(50) NOT NULL,
+        game_mode VARCHAR(20) NOT NULL DEFAULT 'survival',
+        total_shots INTEGER DEFAULT 0,
+        total_hits INTEGER DEFAULT 0,
+        total_kills INTEGER DEFAULT 0,
+        total_headshots INTEGER DEFAULT 0,
+        accuracy DECIMAL(5,2) DEFAULT 0.00,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(player_id, weapon_name, game_mode)
+      );
+    `);
+
+    await client.query('COMMIT');
+    logger.info('DB_SCHEMA', 'Esquema base do banco de dados verificado/criado com sucesso');
+  } catch (error) {
+    await client.query('ROLLBACK');
+    logger.error('DB_SCHEMA', 'Erro ao criar esquema base', { error: error.message });
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 async function ensureExtendedSchema() {
   const client = await pool.connect();
   try {
@@ -2253,6 +2345,7 @@ app.use((err, req, res, next) => {
 
 async function startServer() {
   try {
+    await ensureBaseSchema();
     await ensureExtendedSchema();
 
     if (process.env.NODE_ENV !== 'test') {
