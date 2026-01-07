@@ -1407,7 +1407,7 @@ function setupControls() {
             isDragging = true;
             previousMousePosition = { x: e.clientX, y: e.clientY };
         } else if (e.button === 0) { // Left click
-            if (addingEnemySpawn || placingObjective || placingTeamSpawn) {
+            if (addingEnemySpawn || placingObjective || placingTeamSpawn || placingX1Spawn || placingBattleMarker) {
                 onMapClick(e);
             } else {
                 onMouseClick(e);
@@ -1942,107 +1942,115 @@ function testMap() {
     if (editorMode === 'x1') {
         // Para X1, precisa abrir com parâmetros de duelo (coopMode=x1&coopRole=host)
         modeParam = '?coopMode=x1&coopRole=host';
-
-        if (confirm(`🎮 Testar mapa "${mapName}"?\n\nModo: ${editorMode.toUpperCase()}${x1Info}\nObjetos: ${mapObjects.length}\n\nO mapa será salvo e o jogo será aberto.`)) {
-            window.open(gamePage + modeParam, '_blank');
-        }
+    } else if (editorMode === 'tactical') {
+        gamePage = 'game5v5.html';
+    } else if (editorMode === 'battleRoyale') {
+        gamePage = 'gamebt.html';
     }
 
-    function importMap(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    const x1Info = editorMode === 'x1' ?
+        `\nSpawns: P1 ${x1Data.spawns.player1 ? '✓' : '✗'}, P2 ${x1Data.spawns.player2 ? '✓' : '✗'}` : '';
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const mapData = JSON.parse(e.target.result);
+    if (confirm(`🎮 Testar mapa "${mapName}"?\n\nModo: ${editorMode.toUpperCase()}${x1Info}\nObjetos: ${mapObjects.length}\n\nO mapa será salvo e o jogo será aberto.`)) {
+        window.open(gamePage + modeParam, '_blank');
+    }
+}
 
-                clearAll(true);
+function importMap(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-                document.getElementById('mapName').value = mapData.name || 'Mapa Importado';
-                document.getElementById('skyColor').value = mapData.skyColor || '0x87ceeb';
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const mapData = JSON.parse(e.target.result);
 
-                scene.background = new THREE.Color(parseInt(mapData.skyColor));
-                scene.fog = new THREE.Fog(parseInt(mapData.skyColor), 10, 150);
+            clearAll(true);
 
-                mapData.objects?.forEach(objData => {
-                    const geometry = new THREE.BoxGeometry(objData.width, objData.height, objData.depth);
-                    const material = new THREE.MeshStandardMaterial({
-                        color: parseInt(objData.color),
-                        roughness: 0.7,
-                        metalness: 0.1
-                    });
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(objData.position.x, objData.position.y, objData.position.z);
-                    mesh.castShadow = true;
-                    mesh.receiveShadow = true;
+            document.getElementById('mapName').value = mapData.name || 'Mapa Importado';
+            document.getElementById('skyColor').value = mapData.skyColor || '0x87ceeb';
 
-                    if (objData.rotation) {
-                        mesh.rotation.set(objData.rotation.x, objData.rotation.y, objData.rotation.z);
-                    }
+            scene.background = new THREE.Color(parseInt(mapData.skyColor));
+            scene.fog = new THREE.Fog(parseInt(mapData.skyColor), 10, 150);
 
-                    if (objData.texture) {
-                        applyTextureToMesh(mesh, objData.texture);
-                    }
-
-                    scene.add(mesh);
-                    const blocking = typeof objData.blocking === 'boolean' ? objData.blocking : determineObjectBlocking(objData.type);
-
-                    mapObjects.push({
-                        mesh: mesh,
-                        type: objData.type,
-                        width: objData.width,
-                        height: objData.height,
-                        depth: objData.depth,
-                        color: parseInt(objData.color),
-                        texture: objData.texture,
-                        position: objData.position,
-                        rotation: objData.rotation || { x: 0, y: 0, z: 0 },
-                        blocking
-                    });
+            mapData.objects?.forEach(objData => {
+                const geometry = new THREE.BoxGeometry(objData.width, objData.height, objData.depth);
+                const material = new THREE.MeshStandardMaterial({
+                    color: parseInt(objData.color),
+                    roughness: 0.7,
+                    metalness: 0.1
                 });
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.position.set(objData.position.x, objData.position.y, objData.position.z);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
 
-                const survivalPayload = mapData.modeSettings?.survival || { config: mapData.config, enemySpawns: mapData.enemySpawns };
-                loadSurvivalSettings(survivalPayload);
-                loadTacticalMapData(mapData.modeSettings?.tactical || mapData.tactical);
-                loadBattleSettings(mapData.modeSettings?.battleRoyale || mapData.battleRoyale);
-                loadX1Settings(mapData.modeSettings?.x1 || mapData.x1);
-
-                // Detectar modo do mapa e atualizar UI
-                if (mapData.gameMode) {
-                    setEditorMode(mapData.gameMode);
+                if (objData.rotation) {
+                    mesh.rotation.set(objData.rotation.x, objData.rotation.y, objData.rotation.z);
                 }
 
-                updateObjectsList();
+                if (objData.texture) {
+                    applyTextureToMesh(mesh, objData.texture);
+                }
 
-                const x1Info = x1Data.spawns.player1 || x1Data.spawns.player2 ?
-                    `\n- Spawns X1: ${x1Data.spawns.player1 ? '✓' : '✗'} P1, ${x1Data.spawns.player2 ? '✓' : '✗'} P2` : '';
+                scene.add(mesh);
+                const blocking = typeof objData.blocking === 'boolean' ? objData.blocking : determineObjectBlocking(objData.type);
 
-                alert(`✅ Mapa importado com sucesso!\n\n📊 Carregado:\n- ${mapObjects.length} objetos\n- ${enemySpawns.length} spawns de inimigos\n- ${mapConfig.totalRounds} rounds\n- Música: ${mapConfig.musicName || 'Nenhuma'}${x1Info}`);
-            } catch (error) {
-                alert('❌ Erro ao importar mapa: ' + error.message);
+                mapObjects.push({
+                    mesh: mesh,
+                    type: objData.type,
+                    width: objData.width,
+                    height: objData.height,
+                    depth: objData.depth,
+                    color: parseInt(objData.color),
+                    texture: objData.texture,
+                    position: objData.position,
+                    rotation: objData.rotation || { x: 0, y: 0, z: 0 },
+                    blocking
+                });
+            });
+
+            const survivalPayload = mapData.modeSettings?.survival || { config: mapData.config, enemySpawns: mapData.enemySpawns };
+            loadSurvivalSettings(survivalPayload);
+            loadTacticalMapData(mapData.modeSettings?.tactical || mapData.tactical);
+            loadBattleSettings(mapData.modeSettings?.battleRoyale || mapData.battleRoyale);
+            loadX1Settings(mapData.modeSettings?.x1 || mapData.x1);
+
+            // Detectar modo do mapa e atualizar UI
+            if (mapData.gameMode) {
+                setEditorMode(mapData.gameMode);
             }
-        };
-        reader.readAsText(file);
-    }
 
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
+            updateObjectsList();
 
-    function onWindowResize() {
-        const { width: viewportWidth, height: viewportHeight } = getViewportDimensions();
-        camera.aspect = viewportWidth / viewportHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(viewportWidth, viewportHeight);
-    }
+            const x1Info = x1Data.spawns.player1 || x1Data.spawns.player2 ?
+                `\n- Spawns X1: ${x1Data.spawns.player1 ? '✓' : '✗'} P1, ${x1Data.spawns.player2 ? '✓' : '✗'} P2` : '';
 
-    init();
-    applyBattleConfigToInputs(battleConfig);
-    updateBattleLootList();
-    updateBattleDropList();
-    setEditorMode('survival');
-    updateObjectiveInfo();
-    updateTeamSpawnList('allies');
-    updateTeamSpawnList('enemies');
+            alert(`✅ Mapa importado com sucesso!\n\n📊 Carregado:\n- ${mapObjects.length} objetos\n- ${enemySpawns.length} spawns de inimigos\n- ${mapConfig.totalRounds} rounds\n- Música: ${mapConfig.musicName || 'Nenhuma'}${x1Info}`);
+        } catch (error) {
+            alert('❌ Erro ao importar mapa: ' + error.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+    const { width: viewportWidth, height: viewportHeight } = getViewportDimensions();
+    camera.aspect = viewportWidth / viewportHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(viewportWidth, viewportHeight);
+}
+
+init();
+applyBattleConfigToInputs(battleConfig);
+updateBattleLootList();
+updateBattleDropList();
+setEditorMode('survival');
+updateObjectiveInfo();
+updateTeamSpawnList('allies');
+updateTeamSpawnList('enemies');
